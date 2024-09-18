@@ -5,11 +5,13 @@ import App from './App.tsx'
 
 const theme = createTheme();
 
-createRoot(document.getElementById('root')!).render(
+const root = createRoot(document.getElementById('root')!);
+
+root.render(
   <StrictMode>
     <ThemeProvider theme={theme}>
     <CssBaseline />
     <App />
     </ThemeProvider>
-  </StrictMode>,
-)
+  </StrictMode>
+);

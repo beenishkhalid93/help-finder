@@ -1,14 +1,19 @@
 import { FC } from "react";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { } from "./LandingPageStyles";
-import { StyledBox, FullPageWrapper, StyledTypography, StyledTypographyMain, StyledButton} from "./LandingPageStyles";
+import { FullPageWrapper, StyledBox, StyledButton, StyledTypography, StyledTypographyMain } from "./LandingPageStyles";
+import { AppRegistration } from '@mui/icons-material';
 import LoginIcon from '@mui/icons-material/Login';
-import AppRegistrationIcon from '@mui/icons-material/AppRegistration';
-
+import { useNavigate } from "react-router-dom";
 
 const LandingPage: FC = () => {
-    return(
 
+    const navigate = useNavigate();
+
+    function handleClick(event: unknown): void {
+        navigate("/profile");
+        
+    }
+
+    return(
     <FullPageWrapper maxWidth="lg">
             <StyledTypography variant="h4" gutterBottom>Welcome to Help Finder </StyledTypography>
             <StyledTypographyMain variant="body1">Help Finder is a platform designed to support you in overcoming 
@@ -17,15 +22,17 @@ const LandingPage: FC = () => {
             </StyledTypographyMain>
 
             <StyledBox mt={16}>
-            <StyledButton variant="contained" color="success" startIcon={<LoginIcon />} onClick={() => {
-                        alert(`Login user`);
-                    }} >Login</StyledButton>
 
-            <StyledButton variant="contained" color="success" startIcon={<AppRegistrationIcon />} onClick={() => {
+            <StyledButton variant="contained" color="success" startIcon={<LoginIcon />} onClick={handleClick} >Login</StyledButton>
+
+            <StyledButton variant="contained" color="success" startIcon={<AppRegistration />} onClick={() => {
                         alert(`Register user`);
-                    }} >Register</StyledButton>
+                        <LandingPage/>
+                    }}>Register
+            </StyledButton>
             </StyledBox>
     </FullPageWrapper>
-)};
+);
+};
    
-   export default LandingPage
+export default LandingPage;
