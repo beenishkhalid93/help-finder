@@ -8,14 +8,19 @@ const LandingPage: FC = () => {
 
     const navigate = useNavigate();
 
-    function handleClick(event: unknown): void {
-        navigate("/profile");
-        
+    function handleClickLogin(event: unknown): void {
+        navigate("/profile");         
+    }
+
+    function handleClickRegister(event: unknown): void {
+        navigate("/register");         
     }
 
     return(
     <FullPageWrapper maxWidth="lg">
+
             <StyledTypography variant="h4" gutterBottom>Welcome to Help Finder </StyledTypography>
+
             <StyledTypographyMain variant="body1">Help Finder is a platform designed to support you in overcoming 
                     challenges by offering financial aid and opening cases related to your situation. 
                     Whether it's financial help or case management, we're here to assist you through tough times.  
@@ -23,14 +28,12 @@ const LandingPage: FC = () => {
 
             <StyledBox mt={16}>
 
-            <StyledButton variant="contained" color="success" startIcon={<LoginIcon />} onClick={handleClick} >Login</StyledButton>
+                <StyledButton variant="contained" color="success" startIcon={<LoginIcon />} onClick={handleClickLogin} >Login</StyledButton>
 
-            <StyledButton variant="contained" color="success" startIcon={<AppRegistration />} onClick={() => {
-                        alert(`Register user`);
-                        <LandingPage/>
-                    }}>Register
-            </StyledButton>
+                <StyledButton variant="contained" color="success" startIcon={<AppRegistration />} onClick={handleClickRegister} >Register</StyledButton>
+
             </StyledBox>
+
     </FullPageWrapper>
 );
 };
