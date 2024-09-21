@@ -14,23 +14,12 @@ export const StyledTypography = styled(Typography)(({ theme }) => ({
  export const StyledBoxMain = styled(Box)(() => ({
      display: 'flex', 
      flexDirection: 'column', 
-     gap: 20,
- 
+     gap: 30,
+     marginTop: 25,
      alignItems: 'center',
      width: '100%', // Full width for mobile responsiveness
      
  }));
-
- export const StyledBox = styled(Box)(() => ({
-    marginTop: '3px',
-    display: 'flex', 
-    flexDirection: 'row', 
-    gap: 12,
-
-    alignItems: 'center',
-    width: '80%', // Full width for mobile responsiveness
-    
-}));
  
  // Function to return responsive styles dynamically
  const getResponsiveStyles = (theme) => ({

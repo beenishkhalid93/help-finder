@@ -9,7 +9,7 @@ const LandingPage: FC = () => {
     const navigate = useNavigate();
 
     function handleClickLogin(event: unknown): void {
-        navigate("/profile");         
+        navigate("/login");         
     }
 
     function handleClickRegister(event: unknown): void {
