@@ -1,20 +1,10 @@
-import {Typography, Box, Container, styled, Button, TextField } from "@mui/material";
-
-export const StyledTypography = styled(Typography)(({ theme }) => ({
-    // color: '#333',                    // Dark text color
-     fontFamily: 'Arial, sans-serif',   // Custom font family
-     fontSize: '35px',                 // Custom font size
-     fontWeight: 'bold',               // Bold text
-     fontStyle: 'italic',   // Margin below the typography
-     padding: theme.spacing(3,0),
-
-     borderBottom: '2px solid #000', // Add bottom border
-   }));
+import {Box, Container, styled, Button, TextField } from "@mui/material";
  
  export const StyledBoxMain = styled(Box)(() => ({
      display: 'flex', 
      flexDirection: 'column', 
-     gap: 20,
+     gap: 30,
+     marginTop: 25,
  
      alignItems: 'center',
      width: '100%', // Full width for mobile responsiveness
@@ -33,7 +23,7 @@ export const StyledTypography = styled(Typography)(({ theme }) => ({
 }));
  
  // Function to return responsive styles dynamically
- const getResponsiveStyles = (theme) => ({
+ const getResponsiveStyles = () => ({
      width: {
        xs: '80%', // Width for extra small screens
        sm: '80%', // Width for small screens
@@ -46,29 +36,19 @@ export const StyledTypography = styled(Typography)(({ theme }) => ({
      },
      height: '50px', // Fixed height across all sizes
    });
- 
- export const StyledButton = styled(Button)(({ theme }) => {
-     const responsiveStyles = getResponsiveStyles(theme);
-     return {
-       height: responsiveStyles.height, // Fixed height
-       marginTop: '30px',
-       [theme.breakpoints.up('xs')]: {
-         width: responsiveStyles.width.xs,
-         fontSize: responsiveStyles.fontSize.xs,
-       },
-       [theme.breakpoints.up('sm')]: {
-         width: responsiveStyles.width.sm,
-         fontSize: responsiveStyles.fontSize.sm,
-       },
-       [theme.breakpoints.up('md')]: {
-         width: responsiveStyles.width.md,
-         fontSize: responsiveStyles.fontSize.md,
-       },
-     };
-   });
+
+export const StyledButtonOutlined = styled(Button)(() => ({
+    marginTop: '30px',
+    border: '2px solid #1a761e', // Custom border color and width
+    borderRadius: '20px', // Custom border-radius for rounded corners
+    '&:hover': {
+      border: '2px solid #388E3C', // Border color change on hover
+    },
+    width: '20rem',
+  }));
 
 export const StyledTextField = styled(TextField)(({ theme }) => {
-    const responsiveStyles = getResponsiveStyles(theme);
+    const responsiveStyles = getResponsiveStyles();
    
      return {
        height: responsiveStyles.height, // Fixed height

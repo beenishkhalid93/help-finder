@@ -1,15 +1,4 @@
-import {Typography, Box, Container, styled, Button, TextField } from "@mui/material";
-
-export const StyledTypography = styled(Typography)(({ theme }) => ({
-    // color: '#333',                    // Dark text color
-     fontFamily: 'Arial, sans-serif',   // Custom font family
-     fontSize: '35px',                 // Custom font size
-     fontWeight: 'bold',               // Bold text
-     fontStyle: 'italic',   // Margin below the typography
-     padding: theme.spacing(3,0),
-
-     borderBottom: '2px solid #000', // Add bottom border
-   }));
+import {Box, Container, styled, Button, TextField } from "@mui/material";
  
  export const StyledBoxMain = styled(Box)(() => ({
      display: 'flex', 
@@ -20,9 +9,15 @@ export const StyledTypography = styled(Typography)(({ theme }) => ({
      width: '100%', // Full width for mobile responsiveness
      
  }));
+
+ export const StyledButtonContained = styled(Button)(() => ({
+    borderRadius: '20px', // Custom border-radius for rounded corners
+    width: '20rem',
+    marginTop: '30px',
+  }));
  
  // Function to return responsive styles dynamically
- const getResponsiveStyles = (theme) => ({
+ const getResponsiveStyles = () => ({
      width: {
        xs: '80%', // Width for extra small screens
        sm: '80%', // Width for small screens
@@ -35,29 +30,9 @@ export const StyledTypography = styled(Typography)(({ theme }) => ({
      },
      height: '50px', // Fixed height across all sizes
    });
- 
- export const StyledButton = styled(Button)(({ theme }) => {
-     const responsiveStyles = getResponsiveStyles(theme);
-     return {
-       height: responsiveStyles.height, // Fixed height
-       marginTop: '30px',
-       [theme.breakpoints.up('xs')]: {
-         width: responsiveStyles.width.xs,
-         fontSize: responsiveStyles.fontSize.xs,
-       },
-       [theme.breakpoints.up('sm')]: {
-         width: responsiveStyles.width.sm,
-         fontSize: responsiveStyles.fontSize.sm,
-       },
-       [theme.breakpoints.up('md')]: {
-         width: responsiveStyles.width.md,
-         fontSize: responsiveStyles.fontSize.md,
-       },
-     };
-   });
 
 export const StyledTextField = styled(TextField)(({ theme }) => {
-    const responsiveStyles = getResponsiveStyles(theme);
+    const responsiveStyles = getResponsiveStyles();
    
      return {
        height: responsiveStyles.height, // Fixed height
@@ -77,6 +52,8 @@ export const StyledTextField = styled(TextField)(({ theme }) => {
    });
 
 export const FullPageWrapper = styled(Container)(({ theme }) => ({
+    // display: 'flex',
+    // flexDirection: 'row',
     textAlign: 'center',       // Center text within the container
     justifyContent: 'center',
     alignItems: 'center',

@@ -1,18 +1,17 @@
 import { FC } from "react";
-import { FullPageWrapper, StyledBox, StyledButton, StyledTypography, StyledTypographyMain } from "./LandingPageStyles";
-import { AppRegistration } from '@mui/icons-material';
-import LoginIcon from '@mui/icons-material/Login';
+import { FullPageWrapper, StyledBox, StyledButtonContained, StyledButtonOutlined, StyledTypography, StyledTypographyMain } from "./LandingPage.styles";
+import { AppRegistration, Login} from '@mui/icons-material';
 import { useNavigate } from "react-router-dom";
 
 const LandingPage: FC = () => {
 
     const navigate = useNavigate();
 
-    function handleClickLogin(event: unknown): void {
+    function handleClickLogin(): void {
         navigate("/login");         
     }
 
-    function handleClickRegister(event: unknown): void {
+    function handleClickRegister(): void {
         navigate("/register");         
     }
 
@@ -28,9 +27,11 @@ const LandingPage: FC = () => {
 
             <StyledBox mt={16}>
 
-                <StyledButton variant="contained" color="success" startIcon={<LoginIcon />} onClick={handleClickLogin} >Login</StyledButton>
+                <StyledButtonContained variant="contained" color="success"  startIcon={<Login />} onClick={handleClickLogin} 
+                  >Login</StyledButtonContained>
 
-                <StyledButton variant="contained" color="success" startIcon={<AppRegistration />} onClick={handleClickRegister} >Register</StyledButton>
+                <StyledButtonOutlined variant="outlined" color="success" startIcon={<AppRegistration />} onClick={handleClickRegister} 
+                  >Register</StyledButtonOutlined>
 
             </StyledBox>
 

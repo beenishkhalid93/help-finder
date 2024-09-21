@@ -1,12 +1,9 @@
 import { FC, useState }  from "react";
-import { FullPageWrapper, StyledTypography, StyledButton, StyledBoxMain, StyledTextField} from "./LoginPageStyle";
+import { FullPageWrapper, StyledButtonContained, StyledBoxMain, StyledTextField} from "./LoginPage.styles";
 import { useNavigate } from "react-router-dom";
-import {InputAdornment, IconButton } from "@mui/material";
-import MailIcon from '@mui/icons-material/Mail';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import LoginIcon from '@mui/icons-material/Login';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import {InputAdornment, IconButton} from "@mui/material";
+import AppHeader from "../../components/AppHeader/AppHeader";
+import { LockOpen, Login, Mail, Visibility, VisibilityOff } from "@mui/icons-material";
 
 const LoginPage: FC = () => {
 
@@ -16,6 +13,7 @@ const LoginPage: FC = () => {
 
     const [emailText, setEmailText] = useState('');
     const [passwordText, setPasswordText] = useState('');
+    
     const [emailError, setEmailError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
 
@@ -56,12 +54,13 @@ const LoginPage: FC = () => {
     return (
 
     <FullPageWrapper maxWidth="md">
-        
-        <StyledTypography variant="h4" gutterBottom >Login to Help Finder</StyledTypography>
+
+        <AppHeader />
 
         <StyledBoxMain>
 
             <StyledTextField
+
                 required
                 id="email-required"
                 placeholder="Email"
@@ -76,7 +75,7 @@ const LoginPage: FC = () => {
                     input: {
                       startAdornment: (
                         <InputAdornment position="start">
-                          <MailIcon />
+                          <Mail />
                         </InputAdornment>
                       ),
                     },
@@ -94,19 +93,19 @@ const LoginPage: FC = () => {
                 onChange={handlePasswordChange}
 
                 error={passwordError}  // Shows error style if passwordError is true
-                helperText={passwordError ? 'Password is mandatory' : ''}  // Conditional helper text
+                helperText={passwordError? 'Password is mandatory' : ''}  // Conditional helper text
 
                 slotProps={{
                     input: {
                       startAdornment: (
                             <InputAdornment position="start">
-                              <LockOpenIcon />
+                              <LockOpen />
                             </InputAdornment>
                           ),
                       endAdornment: (
                         <InputAdornment position="end">
                             <IconButton onClick={handleClickShowPassword} edge="end">
-                                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
                         </InputAdornment>
                       ),
@@ -114,7 +113,7 @@ const LoginPage: FC = () => {
                   }}
             />
 
-            <StyledButton variant="contained" color="success" startIcon={<LoginIcon />} onClick={handleClickLogin} >Login</StyledButton>
+            <StyledButtonContained variant="contained" color="success" startIcon={<Login />} onClick={handleClickLogin} >Login</StyledButtonContained>
 
         </StyledBoxMain>
 
