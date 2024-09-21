@@ -1,29 +1,28 @@
-import {Typography, Box, Container, styled, Button } from "@mui/material";
+import { Typography, Box, Container, styled, Button } from '@mui/material';
 
 export const StyledTypography = styled(Typography)(({ theme }) => ({
-    fontFamily: 'Arial, sans-serif',   // Custom font family
-    fontSize: '35px',                 // Custom font size
-    fontWeight: 'bold',               // Bold text
-    fontStyle: 'italic',   // Margin below the typography
-    padding: theme.spacing(3,0),
-  }));
+  fontFamily: 'Arial, sans-serif', // Custom font family
+  fontSize: '35px', // Custom font size
+  fontWeight: 'bold', // Bold text
+  fontStyle: 'italic', // Margin below the typography
+  padding: theme.spacing(3, 0),
+}));
 
-  export const StyledTypographyMain = styled(Typography)(({ theme }) => ({
-     fontFamily: 'Arial, sans-serif',   // Custom font family
-     fontSize: '20px',                 // Custom font size
-     fontWeight: 'bold',               // Bold text
-     fontStyle: 'italic', 
-     marginBottom: theme.spacing(2),   // Margin below the typography
-   }));
+export const StyledTypographyMain = styled(Typography)(({ theme }) => ({
+  fontFamily: 'Arial, sans-serif', // Custom font family
+  fontSize: '20px', // Custom font size
+  fontWeight: 'bold', // Bold text
+  fontStyle: 'italic',
+  marginBottom: theme.spacing(2), // Margin below the typography
+}));
 
 export const StyledBox = styled(Box)(() => ({
-    display: 'flex', 
-    flexDirection: 'column', 
-    gap: 10,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 10,
 
-    alignItems: 'center',
-    width: '100%', // Full width for mobile responsiveness
-    
+  alignItems: 'center',
+  width: '100%', // Full width for mobile responsiveness
 }));
 
 export const StyledButtonContained = styled(Button)(() => ({
@@ -41,16 +40,16 @@ export const StyledButtonOutlined = styled(Button)(() => ({
 }));
 
 export const FullPageWrapper = styled(Container)(() => ({
-    textAlign: 'center',       // Center text within the container
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh', // Full viewport height
-    // minWidth: '100vw',  // Full viewport width
-    color: 'black',
-    backgroundColor: '#ffffff', // Optional background color (white in this case)
-   // flexDirection: 'row',   // Flex items in a row
-    // backgroundImage: `url(${"../src/assets/images/bg2.png"})`, // Use the imported image
-    // backgroundSize: 'cover',    // Set width to 80% of the container, height adjusts automatically
-    // backgroundPositionX: 'center',
-    // backgroundRepeat: 'no-repeat',
-  }));
+  textAlign: 'center', // Center text within the container
+  justifyContent: 'center',
+  alignItems: 'center',
+  minHeight: '100vh', // Full viewport height
+  // minWidth: '100vw',  // Full viewport width
+  color: 'black',
+  backgroundColor: '#ffffff', // Optional background color (white in this case)
+  // flexDirection: 'row',   // Flex items in a row
+  // backgroundImage: `url(${"../src/assets/images/bg2.png"})`, // Use the imported image
+  // backgroundSize: 'cover',    // Set width to 80% of the container, height adjusts automatically
+  // backgroundPositionX: 'center',
+  // backgroundRepeat: 'no-repeat',
+}));
