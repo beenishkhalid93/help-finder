@@ -1,14 +1,8 @@
 import { FC } from 'react';
-import {
-  FullPageWrapper,
-  StyledBox,
-  StyledButtonContained,
-  StyledButtonOutlined,
-  StyledTypography,
-  StyledTypographyMain,
-} from './LandingPage.styles';
-import { AppRegistration, Login } from '@mui/icons-material';
+import { HeaderTypography, DesTypography } from './LandingPage.styles';
 import { useNavigate } from 'react-router-dom';
+import AuthButtonGroup from '../../components/AuthButtonGroup/AuthButtonGroup';
+import { FullPageWrapper } from '../../styles/common.styles';
 
 const LandingPage: FC = () => {
   const navigate = useNavigate();
@@ -23,36 +17,23 @@ const LandingPage: FC = () => {
 
   return (
     <FullPageWrapper maxWidth="lg">
-      <StyledTypography variant="h4" gutterBottom>
+      <HeaderTypography variant="h4" gutterBottom>
         Welcome to Help Finder{' '}
-      </StyledTypography>
+      </HeaderTypography>
 
-      <StyledTypographyMain variant="body1">
+      <DesTypography variant="body1">
         Help Finder is a platform designed to support you in overcoming
         challenges by offering financial aid and opening cases related to your
         situation. Whether it's financial help or case management, we're here to
         assist you through tough times.
-      </StyledTypographyMain>
+      </DesTypography>
 
-      <StyledBox mt={16}>
-        <StyledButtonContained
-          variant="contained"
-          color="success"
-          startIcon={<Login />}
-          onClick={handleClickLogin}
-        >
-          Login
-        </StyledButtonContained>
-
-        <StyledButtonOutlined
-          variant="outlined"
-          color="success"
-          startIcon={<AppRegistration />}
-          onClick={handleClickRegister}
-        >
-          Register
-        </StyledButtonOutlined>
-      </StyledBox>
+      <AuthButtonGroup
+        showLogin={true}
+        showRegister={true}
+        clickLogin={handleClickLogin}
+        clickRegister={handleClickRegister}
+      />
     </FullPageWrapper>
   );
 };

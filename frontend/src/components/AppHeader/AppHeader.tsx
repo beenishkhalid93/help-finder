@@ -1,6 +1,7 @@
 import { FC } from 'react';
-import { StyledTypography, StyledBoxTypography } from './AppHeader.styles';
+import { StyledBoxTypography } from './AppHeader.styles';
 import { useNavigate } from 'react-router-dom';
+import { Typography } from '@mui/material';
 
 const AppHeader: FC = () => {
   const navigate = useNavigate();
@@ -11,9 +12,13 @@ const AppHeader: FC = () => {
 
   return (
     <StyledBoxTypography>
-      <StyledTypography variant="h4" onClick={handleClickHome}>
+      <Typography
+        variant="h4"
+        sx={{ cursor: 'pointer' }}
+        onClick={handleClickHome}
+      >
         Help Finder
-      </StyledTypography>
+      </Typography>
     </StyledBoxTypography>
   );
 };

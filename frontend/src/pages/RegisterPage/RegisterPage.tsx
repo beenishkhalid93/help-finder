@@ -1,18 +1,11 @@
 import { FC, useState } from 'react';
-import {
-  FullPageWrapper,
-  StyledBox,
-  StyledBoxMain,
-  StyledTextField,
-  StyledButtonOutlined,
-} from './RegisterPage.styles';
+import { StyledBox, StyledBoxMain } from './RegisterPage.styles';
 import { useNavigate } from 'react-router-dom';
-import { InputAdornment, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import {
   AccountCircle,
   Mail,
   LockOpen,
-  AppRegistration,
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
@@ -23,6 +16,9 @@ import {
   isValidEmail,
   isValidPassword,
 } from '../../utils/validation';
+import CustomTextField from '../../components/CustomTextField/CustomTextField';
+import AuthButtonGroup from '../../components/AuthButtonGroup/AuthButtonGroup';
+import { FullPageWrapper } from '../../styles/common.styles';
 
 const RegisterPage: FC = () => {
   const navigate = useNavigate();
@@ -38,12 +34,11 @@ const RegisterPage: FC = () => {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
 
-  // Toggle password visibility
   const handleClickShowPassword = () => {
     setShowPassword((prev: unknown) => !prev);
   };
 
-  function handleClickLogin(): void {
+  function handleClickRegister(): void {
     setFirstnameError(!isValidFirstname(firstnameText));
     setSurnameError(!isValidSurname(surnameText));
     setEmailError(!isValidEmail(emailText));
@@ -58,24 +53,20 @@ const RegisterPage: FC = () => {
     }
   }
 
-  // Handle input change
   const handleFirstnameChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setFirstnameText(event.target.value); // Update state with the input value
   };
 
-  // Handle input change
   const handleSurnameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSurnameText(event.target.value); // Update state with the input value
   };
 
-  // Handle input change
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmailText(event.target.value); // Update state with the input value
   };
 
-  // Handle input change
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordText(event.target.value); // Update state with the input value
   };
@@ -86,103 +77,53 @@ const RegisterPage: FC = () => {
 
       <StyledBoxMain>
         <StyledBox>
-          <StyledTextField
-            required
-            id="firstname-required"
-            placeholder="Firstname"
-            variant="outlined"
-            value={firstnameText} // Bind state to TextField value
+          <CustomTextField
+            placeholder={'Firstname'}
+            value={firstnameText}
             onChange={handleFirstnameChange}
-            error={firstnameError} // Shows error style if emailError is true
-            helperText={firstnameError ? 'Error: Invalid firstname' : ''} // Conditional helper text
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <AccountCircle />
-                  </InputAdornment>
-                ),
-              },
-            }}
+            error={firstnameError}
+            startIcon={<AccountCircle />}
+            helperText={firstnameError ? 'Error: Invalid firstname' : ''}
           />
 
-          <StyledTextField
-            required
-            id="surname-required"
-            placeholder="Surname"
-            variant="outlined"
-            value={surnameText} // Bind state to TextField value
+          <CustomTextField
+            placeholder={'Surname'}
+            value={surnameText}
             onChange={handleSurnameChange}
-            error={surnameError} // Shows error style if emailError is true
-            helperText={surnameError ? 'Error: Invalid surname' : ''} // Conditional helper text
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <AccountCircle />
-                  </InputAdornment>
-                ),
-              },
-            }}
+            error={surnameError}
+            startIcon={<AccountCircle />}
+            helperText={surnameError ? 'Error: Invalid surname' : ''}
           />
         </StyledBox>
 
-        <StyledTextField
-          required
-          id="email-required"
-          placeholder="Email"
-          variant="outlined"
-          value={emailText} // Bind state to TextField value
+        <CustomTextField
+          placeholder={'Email'}
+          value={emailText}
           onChange={handleEmailChange}
-          error={emailError} // Shows error style if emailError is true
-          helperText={emailError ? 'Error: Invalid email' : ''} // Conditional helper text
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Mail />
-                </InputAdornment>
-              ),
-            },
-          }}
+          error={emailError}
+          startIcon={<Mail />}
+          helperText={emailError ? 'Error: Invalid email' : ''}
         />
 
-        <StyledTextField
-          required
-          id="password-required"
-          placeholder="Password"
-          variant="outlined"
-          type={showPassword ? 'text' : 'password'} // Toggle input type
-          value={passwordText} // Bind state to TextField value
+        <CustomTextField
+          placeholder={'Password'}
+          value={passwordText}
           onChange={handlePasswordChange}
-          error={passwordError} // Shows error style if passwordError is true
-          helperText={passwordError ? 'Error: Invalid password' : ''} // Conditional helper text
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LockOpen />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={handleClickShowPassword} edge="end">
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
+          error={passwordError}
+          startIcon={<LockOpen />}
+          type={showPassword ? 'text' : 'password'}
+          helperText={passwordError ? 'Error: Invalid password' : ''}
+          endIcon={
+            <IconButton onClick={handleClickShowPassword} edge="end">
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          }
         />
 
-        <StyledButtonOutlined
-          variant="contained"
-          color="success"
-          startIcon={<AppRegistration />}
-          onClick={handleClickLogin}
-        >
-          Register
-        </StyledButtonOutlined>
+        <AuthButtonGroup
+          showRegister={true}
+          clickRegister={handleClickRegister}
+        />
       </StyledBoxMain>
     </FullPageWrapper>
   );
