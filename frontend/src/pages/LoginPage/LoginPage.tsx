@@ -15,6 +15,7 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
+import { isValidEmail, isValidPassword } from '../../utils/validation';
 
 const LoginPage: FC = () => {
   const navigate = useNavigate();
@@ -33,9 +34,9 @@ const LoginPage: FC = () => {
   };
 
   function handleClickLogin(): void {
-    setEmailError(!validateEmail(emailText));
-    setPasswordError(!validatePassword(passwordText));
-    if (validateEmail(emailText) && validatePassword(passwordText)) {
+    setEmailError(!isValidEmail(emailText));
+    setPasswordError(!isValidPassword(passwordText));
+    if (isValidEmail(emailText) && isValidPassword(passwordText)) {
       navigate('/profile');
     }
   }
@@ -48,19 +49,6 @@ const LoginPage: FC = () => {
   // Handle input change
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordText(event.target.value); // Update state with the input value
-  };
-
-  // Function to validate email
-  const validateEmail = (email: string): boolean => {
-    // Simple email validation regex
-    const isValid = !!email && /\S+@\S+\.\S+/.test(email);
-    return isValid;
-  };
-
-  // Function to validate password
-  const validatePassword = (password: string): boolean => {
-    const isValid = !!password;
-    return isValid;
   };
 
   return (
@@ -97,7 +85,7 @@ const LoginPage: FC = () => {
           value={passwordText} // Bind state to TextField value
           onChange={handlePasswordChange}
           error={passwordError} // Shows error style if passwordError is true
-          helperText={passwordError ? 'Password is mandatory' : ''} // Conditional helper text
+          helperText={passwordError ? 'Error: Invalid password' : ''} // Conditional helper text
           slotProps={{
             input: {
               startAdornment: (

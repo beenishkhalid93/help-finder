@@ -17,6 +17,12 @@ import {
   VisibilityOff,
 } from '@mui/icons-material';
 import AppHeader from '../../components/AppHeader/AppHeader';
+import {
+  isValidFirstname,
+  isValidSurname,
+  isValidEmail,
+  isValidPassword,
+} from '../../utils/validation';
 
 const RegisterPage: FC = () => {
   const navigate = useNavigate();
@@ -38,15 +44,15 @@ const RegisterPage: FC = () => {
   };
 
   function handleClickLogin(): void {
-    setFirstnameError(!validateFirstname(firstnameText));
-    setSurnameError(!validateSurname(surnameText));
-    setEmailError(!validateEmail(emailText));
-    setPasswordError(!validatePassword(passwordText));
+    setFirstnameError(!isValidFirstname(firstnameText));
+    setSurnameError(!isValidSurname(surnameText));
+    setEmailError(!isValidEmail(emailText));
+    setPasswordError(!isValidPassword(passwordText));
     if (
-      validateFirstname(firstnameText) &&
-      validateSurname(surnameText) &&
-      validateEmail(emailText) &&
-      validatePassword(passwordText)
+      isValidFirstname(firstnameText) &&
+      isValidSurname(surnameText) &&
+      isValidEmail(emailText) &&
+      isValidPassword(passwordText)
     ) {
       navigate('/profile');
     }
@@ -72,37 +78,6 @@ const RegisterPage: FC = () => {
   // Handle input change
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordText(event.target.value); // Update state with the input value
-  };
-
-  // Function to validate firstname
-  const validateFirstname = (firstname: string): boolean => {
-    const isValid =
-      !!firstname && /^[a-zA-Z]{3,50}([ '-][a-zA-Z]{3,50})*$/.test(firstname);
-    return isValid;
-  };
-
-  // Function to validate surname
-  const validateSurname = (surname: string): boolean => {
-    const isValid =
-      !!surname && /^[a-zA-Z]{3,50}([ '-][a-zA-Z]{3,50})*$/.test(surname);
-    return isValid;
-  };
-
-  // Function to validate email
-  const validateEmail = (email: string): boolean => {
-    // Simple email validation regex
-    const isValid = !!email && /\S+@\S+\.\S+/.test(email);
-    return isValid;
-  };
-
-  // Function to validate password
-  const validatePassword = (password: string): boolean => {
-    const isValid =
-      !!password &&
-      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$/.test(
-        password,
-      );
-    return isValid;
   };
 
   return (
