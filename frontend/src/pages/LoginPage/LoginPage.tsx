@@ -1,5 +1,4 @@
 import { FC, useState } from 'react';
-import { StyledBoxMain } from './LoginPage.styles';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import AppHeader from '../../components/AppHeader/AppHeader';
@@ -7,7 +6,10 @@ import { LockOpen, Mail, Visibility, VisibilityOff } from '@mui/icons-material';
 import { isValidEmail, isValidPassword } from '../../utils/validation';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import AuthButtonGroup from '../../components/AuthButtonGroup/AuthButtonGroup';
-import { FullPageWrapper } from '../../styles/common.styles';
+import {
+  FullPageWrapper,
+  TextFieldContainer,
+} from '../../styles/common.styles';
 
 const LoginPage: FC = () => {
   const navigate = useNavigate();
@@ -48,7 +50,7 @@ const LoginPage: FC = () => {
     <FullPageWrapper maxWidth="md">
       <AppHeader />
 
-      <StyledBoxMain>
+      <TextFieldContainer>
         <CustomTextField
           placeholder={'Email'}
           value={emailText}
@@ -72,14 +74,14 @@ const LoginPage: FC = () => {
             </IconButton>
           }
         />
+      </TextFieldContainer>
 
-        <AuthButtonGroup
-          showLogin={true}
-          showRegister={true}
-          clickLogin={handleClickLogin}
-          clickRegister={handleClickRegister}
-        />
-      </StyledBoxMain>
+      <AuthButtonGroup
+        showLogin={true}
+        showRegister={true}
+        clickLogin={handleClickLogin}
+        clickRegister={handleClickRegister}
+      />
     </FullPageWrapper>
   );
 };

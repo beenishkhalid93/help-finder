@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { StyledBox, StyledBoxMain } from './RegisterPage.styles';
+import { RowContainer } from './RegisterPage.styles';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import {
@@ -18,7 +18,10 @@ import {
 } from '../../utils/validation';
 import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import AuthButtonGroup from '../../components/AuthButtonGroup/AuthButtonGroup';
-import { FullPageWrapper } from '../../styles/common.styles';
+import {
+  FullPageWrapper,
+  TextFieldContainer,
+} from '../../styles/common.styles';
 
 const RegisterPage: FC = () => {
   const navigate = useNavigate();
@@ -75,8 +78,8 @@ const RegisterPage: FC = () => {
     <FullPageWrapper maxWidth="md">
       <AppHeader />
 
-      <StyledBoxMain>
-        <StyledBox>
+      <TextFieldContainer>
+        <RowContainer>
           <CustomTextField
             placeholder={'Firstname'}
             value={firstnameText}
@@ -94,7 +97,7 @@ const RegisterPage: FC = () => {
             startIcon={<AccountCircle />}
             helperText={surnameError ? 'Error: Invalid surname' : ''}
           />
-        </StyledBox>
+        </RowContainer>
 
         <CustomTextField
           placeholder={'Email'}
@@ -119,12 +122,12 @@ const RegisterPage: FC = () => {
             </IconButton>
           }
         />
+      </TextFieldContainer>
 
-        <AuthButtonGroup
-          showRegister={true}
-          clickRegister={handleClickRegister}
-        />
-      </StyledBoxMain>
+      <AuthButtonGroup
+        showRegister={true}
+        clickRegister={handleClickRegister}
+      />
     </FullPageWrapper>
   );
 };

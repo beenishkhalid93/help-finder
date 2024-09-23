@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import {
-  StyledBox,
-  StyledButtonContained,
-  StyledButtonOutlined,
+  ColumnButtonContainer,
+  ContainedButton,
+  OutlinedButton,
 } from './AuthButtonGroup.styles';
 import { AppRegistration, Login } from '@mui/icons-material';
 
@@ -20,28 +20,28 @@ const AuthButtonGroup: FC<AuthButtonGroupProps> = ({
   clickRegister,
 }) => {
   return (
-    <StyledBox mt={16}>
+    <ColumnButtonContainer mt={16}>
       {showLogin && (
-        <StyledButtonContained
+        <ContainedButton
           variant="contained"
           color="success"
           startIcon={<Login />}
           onClick={clickLogin}
         >
           Login
-        </StyledButtonContained>
+        </ContainedButton>
       )}
       {showRegister && (
-        <StyledButtonOutlined
+        <OutlinedButton
           variant="outlined"
           color="success"
           startIcon={<AppRegistration />}
           onClick={clickRegister}
         >
           Register
-        </StyledButtonOutlined>
+        </OutlinedButton>
       )}
-    </StyledBox>
+    </ColumnButtonContainer>
   );
 };
 

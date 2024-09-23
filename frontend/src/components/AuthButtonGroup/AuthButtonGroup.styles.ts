@@ -1,6 +1,6 @@
 import { Box, Button, styled } from "@mui/material";
 
-export const StyledBox = styled(Box)(() => ({
+export const ColumnButtonContainer = styled(Box)(() => ({
     display: 'flex',
     flexDirection: 'column',
     gap: 10,
@@ -9,12 +9,12 @@ export const StyledBox = styled(Box)(() => ({
     width: '100%', 
   }));
 
-  export const StyledButtonContained = styled(Button)(() => ({
+  export const ContainedButton = styled(Button)(() => ({
     borderRadius: '20px', 
     width: '20rem',
   }));
   
-  export const StyledButtonOutlined = styled(Button)(() => ({
+  export const OutlinedButton = styled(Button)(() => ({
     border: '2px solid #1a761e', 
     borderRadius: '20px',
     '&:hover': {

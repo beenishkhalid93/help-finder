@@ -1,10 +1,20 @@
-import { Container, styled } from "@mui/material";
+import { Box, Container, styled } from "@mui/material";
 
 export const FullPageWrapper = styled(Container)(({ theme }) => ({
     textAlign: 'center', 
     justifyContent: 'center',
     alignItems: 'center',
-    minHeight: '100vh', 
+    height: '100vh', 
     color: 'black',
     padding: theme.spacing(3, 0),
+  }));
+
+export const TextFieldContainer = styled(Box)(() => ({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 30,
+    marginTop: 25,
+  
+    alignItems: 'center',
+    width: '100%',
   }));

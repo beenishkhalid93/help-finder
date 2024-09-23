@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { StyledBoxTypography } from './AppHeader.styles';
+import { CenterlizedHeaderContainer } from './AppHeader.styles';
 import { useNavigate } from 'react-router-dom';
 import { Typography } from '@mui/material';
 
@@ -11,7 +11,7 @@ const AppHeader: FC = () => {
   };
 
   return (
-    <StyledBoxTypography>
+    <CenterlizedHeaderContainer>
       <Typography
         variant="h4"
         sx={{ cursor: 'pointer' }}
@@ -19,7 +19,7 @@ const AppHeader: FC = () => {
       >
         Help Finder
       </Typography>
-    </StyledBoxTypography>
+    </CenterlizedHeaderContainer>
   );
 };
 

@@ -17,9 +17,7 @@ const LandingPage: FC = () => {
 
   return (
     <FullPageWrapper maxWidth="lg">
-      <HeaderTypography variant="h4" gutterBottom>
-        Welcome to Help Finder{' '}
-      </HeaderTypography>
+      <HeaderTypography variant="h4">Welcome to Help Finder</HeaderTypography>
 
       <DesTypography variant="body1">
         Help Finder is a platform designed to support you in overcoming
