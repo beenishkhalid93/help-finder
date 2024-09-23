@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import {
-  ColumnButtonContainer,
-  ContainedButton,
-  OutlinedButton,
+  AuthButtonsContainer,
+  LoginButton,
+  RegisterButton,
 } from './AuthButtonGroup.styles';
 import { AppRegistration, Login } from '@mui/icons-material';
 
@@ -20,28 +20,28 @@ const AuthButtonGroup: FC<AuthButtonGroupProps> = ({
   clickRegister,
 }) => {
   return (
-    <ColumnButtonContainer mt={16}>
+    <AuthButtonsContainer mt={16}>
       {showLogin && (
-        <ContainedButton
+        <LoginButton
           variant="contained"
-          color="success"
+          color="primary"
           startIcon={<Login />}
           onClick={clickLogin}
         >
           Login
-        </ContainedButton>
+        </LoginButton>
       )}
       {showRegister && (
-        <OutlinedButton
+        <RegisterButton
           variant="outlined"
-          color="success"
+          color="secondary"
           startIcon={<AppRegistration />}
           onClick={clickRegister}
         >
           Register
-        </OutlinedButton>
+        </RegisterButton>
       )}
-    </ColumnButtonContainer>
+    </AuthButtonsContainer>
   );
 };
 

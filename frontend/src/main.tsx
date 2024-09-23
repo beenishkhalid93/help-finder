@@ -1,9 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
+import { CssBaseline, ThemeProvider } from '@mui/material';
 import App from './App.tsx';
-
-const theme = createTheme();
+import theme from './theme/theme.ts';
 
 const root = createRoot(document.getElementById('root')!);
 

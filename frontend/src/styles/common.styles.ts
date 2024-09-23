@@ -12,9 +12,8 @@ export const FullPageWrapper = styled(Container)(({ theme }) => ({
 export const TextFieldContainer = styled(Box)(() => ({
     display: 'flex',
     flexDirection: 'column',
-    gap: 30,
+    gap: 10,
     marginTop: 25,
-  
     alignItems: 'center',
     width: '100%',
   }));
