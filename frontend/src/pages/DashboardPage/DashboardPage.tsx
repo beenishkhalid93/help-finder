@@ -31,6 +31,10 @@ const DashboardPage: FC = () => {
     navigate('/profile');
   };
 
+  const handleClickHome = () => {
+    navigate('/landing');
+  };
+
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
       if (
@@ -60,7 +64,12 @@ const DashboardPage: FC = () => {
         <Typography
           variant="h6"
           component="div"
-          sx={{ flexGrow: 1, marginRight: { xs: 0, md: 48 } }} // Adjust margin based on screen size
+          onClick={handleClickHome}
+          sx={{
+            cursor: 'pointer',
+            flexGrow: 1,
+            marginRight: { xs: 0, md: 48 },
+          }} // Adjust margin based on screen size
         >
           Help Finder
         </Typography>

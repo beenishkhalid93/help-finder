@@ -44,6 +44,10 @@ const UsersPage: React.FC = () => {
     navigate('/profile');
   };
 
+  const handleClickHome = () => {
+    navigate('/landing');
+  };
+
   const handleRowClickUser = (user_id: number) => {
     navigate(`/profile/${user_id}`);
   };
@@ -87,7 +91,12 @@ const UsersPage: React.FC = () => {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, marginRight: { xs: 0, md: 48 } }} // Adjust margin based on screen size
+            onClick={handleClickHome}
+            sx={{
+              cursor: 'pointer',
+              flexGrow: 1,
+              marginRight: { xs: 0, md: 48 },
+            }} // Adjust margin based on screen size
           >
             Help Finder
           </Typography>
