@@ -1,37 +1,22 @@
-import { Drawer, List, ListItem, ListItemText } from '@mui/material';
+import { Drawer, List, ListItemText } from '@mui/material';
 import Menu from '@mui/icons-material/Menu';
 import { FC, useState } from 'react';
 import {
   IconButtonDashboard,
   SideListBarDashboard,
   SideListBarName,
-} from '../../styles/common.styles';
-import { useNavigate } from 'react-router-dom';
+} from './SidePanelDashboard.styles';
 
-const SidePanelDashboard: FC = () => {
-  const navigate = useNavigate();
+interface SidePanelProps {
+  selectedTab: string;
+  onTabSelect: (tabName: string) => void;
+}
+
+const SidePanelDashboard: FC<SidePanelProps> = ({
+  selectedTab,
+  onTabSelect,
+}) => {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-
-  const handleTabSelection = (tabName: string) => {
-    // setSelectedTab(tabName);
-    switch (tabName) {
-      case 'cases':
-        navigate('/dashboard/cases');
-        break;
-      case 'users':
-        navigate('/dashboard/users');
-        break;
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'home':
-        navigate('/landing');
-        break;
-      default:
-        navigate('/dashboard');
-        break;
-    }
-  };
 
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -63,21 +48,24 @@ const SidePanelDashboard: FC = () => {
           onKeyDown={toggleDrawer(false)}
         >
           <List>
-            <ListItem
-              component="button"
-              onClick={() => handleTabSelection('users')}
+            <SideListBarName
+              isSelected={selectedTab === 'users'}
+              onClick={() => onTabSelect('users')}
             >
               <ListItemText primary="Users" />
-            </ListItem>
-            <SideListBarName onClick={() => handleTabSelection('cases')}>
+            </SideListBarName>
+            <SideListBarName
+              isSelected={selectedTab === 'cases'}
+              onClick={() => onTabSelect('cases')}
+            >
               <ListItemText primary="Cases" />
             </SideListBarName>
-            <ListItem
-              component="button"
-              onClick={() => handleTabSelection('profile')}
+            <SideListBarName
+              isSelected={selectedTab === 'profile'}
+              onClick={() => onTabSelect('profile')}
             >
               <ListItemText primary="Profile" />
-            </ListItem>
+            </SideListBarName>
           </List>
         </SideListBarDashboard>
       </Drawer>

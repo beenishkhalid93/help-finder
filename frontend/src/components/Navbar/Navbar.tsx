@@ -1,9 +1,9 @@
 import { FC, useState } from 'react';
 import { AppBar } from '@mui/material';
-import { ToolbarDashboard } from '../../styles/common.styles';
 import AppbarDashboard from '../../components/AppbarDashboard/AppbarDashboard';
 import SidePanelDashboard from '../../components/SidePanelDashboard/SidePanelDashboard';
 import { useNavigate } from 'react-router-dom';
+import { ToolbarDashboard } from './Navbar.styles';
 
 const Navbar: FC = () => {
   const [selectedTab, setSelectedTab] = useState<string>(''); // Users selected by default
@@ -34,7 +34,10 @@ const Navbar: FC = () => {
   return (
     <AppBar position="static">
       <ToolbarDashboard>
-        <SidePanelDashboard />
+        <SidePanelDashboard
+          selectedTab={selectedTab}
+          onTabSelect={handleTabSelection}
+        />
         <AppbarDashboard
           selectedTab={selectedTab}
           onTabSelect={handleTabSelection}

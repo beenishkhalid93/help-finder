@@ -1,12 +1,12 @@
 import { FC } from 'react';
-import {
-  AppBarContainerDashboard,
-  AppHeaderDashboard,
-} from '../../styles/common.styles';
 import { IconButton } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { AppBarText } from './AppbarDashboard.styles';
+import {
+  AppBarContainerDashboard,
+  AppBarText,
+  AppHeaderDashboard,
+} from './AppbarDashboard.styles';
 
 interface AppbarDashboardProps {
   selectedTab: string;
