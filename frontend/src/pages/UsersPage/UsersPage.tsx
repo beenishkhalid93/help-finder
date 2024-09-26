@@ -1,16 +1,11 @@
 import React, { useState } from 'react';
 import {
   AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
   Drawer,
   List,
   ListItem,
   ListItemText,
-  Box,
   TableContainer,
-  Table,
   TableHead,
   Paper,
   TableRow,
@@ -18,15 +13,17 @@ import {
   TableBody,
 } from '@mui/material';
 import Menu from '@mui/icons-material/Menu';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import {
-  AppBarContainer,
-  AppBarText,
-} from '../DashboardPage/DashboardPage.styles';
 import { useNavigate } from 'react-router-dom';
-import theme from '../../theme/theme';
-import { FullPageWrapper } from '../../styles/common.styles';
+import {
+  FullPageWrapper,
+  IconButtonDashboard,
+  SideListBarDashboard,
+  SideListBarName,
+  TableDashboard,
+  TableRowDashboard,
+  ToolbarDashboard,
+} from '../../styles/common.styles';
+import AppbarDashboard from '../../components/AppbarDashboard/AppbarDashboard';
 
 const UsersPage: React.FC = () => {
   const navigate = useNavigate();
@@ -42,10 +39,6 @@ const UsersPage: React.FC = () => {
 
   const handleClickProfile = () => {
     navigate('/profile');
-  };
-
-  const handleClickHome = () => {
-    navigate('/landing');
   };
 
   const handleRowClickUser = (user_id: number) => {
@@ -76,87 +69,33 @@ const UsersPage: React.FC = () => {
   return (
     <>
       <AppBar position="static">
-        <Toolbar sx={{ justifyContent: 'flex-end' }}>
-          <IconButton
+        <ToolbarDashboard>
+          <IconButtonDashboard
             size="large"
             edge="start"
             color="inherit"
             aria-label="menu"
-            sx={{ display: { xs: 'flex', md: 'none' } }} // Show only on mobile screens
             onClick={toggleDrawer(true)}
           >
             <Menu />
-          </IconButton>
+          </IconButtonDashboard>
 
-          <Typography
-            variant="h6"
-            component="div"
-            onClick={handleClickHome}
-            sx={{
-              cursor: 'pointer',
-              flexGrow: 1,
-              marginRight: { xs: 0, md: 48 },
-            }} // Adjust margin based on screen size
-          >
-            Help Finder
-          </Typography>
-
-          <AppBarContainer sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <AppBarText
-              variant="h6"
-              onClick={handleClickUsers}
-              sx={{
-                color: theme.palette.secondary.contrastText,
-              }}
-            >
-              Users
-            </AppBarText>
-            <AppBarText variant="h6" onClick={handleClickCases}>
-              Cases
-            </AppBarText>
-            <IconButton
-              size="large"
-              color="inherit"
-              aria-label="notifications"
-              onClick={() => console.log('Account button clicked')}
-            >
-              <NotificationsIcon />
-            </IconButton>
-            <IconButton
-              size="large"
-              color="inherit"
-              aria-label="account"
-              onClick={handleClickProfile}
-            >
-              <AccountCircle />
-            </IconButton>
-          </AppBarContainer>
+          <AppbarDashboard selectedTab={'users'} />
 
           <Drawer
             anchor="left"
             open={isDrawerOpen}
             onClose={toggleDrawer(false)}
           >
-            <Box
-              sx={{ width: 250 }}
+            <SideListBarDashboard
               role="presentation"
               onClick={toggleDrawer(false)}
               onKeyDown={toggleDrawer(false)}
             >
               <List>
-                <ListItem
-                  component="button"
-                  onClick={handleClickUsers}
-                  sx={{
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.primary.contrastText,
-                    '&:hover': {
-                      backgroundColor: theme.palette.primary.dark,
-                    },
-                  }}
-                >
+                <SideListBarName onClick={handleClickUsers}>
                   <ListItemText primary="Users" />
-                </ListItem>
+                </SideListBarName>
                 <ListItem component="button" onClick={handleClickCases}>
                   <ListItemText primary="Cases" />
                 </ListItem>
@@ -164,14 +103,14 @@ const UsersPage: React.FC = () => {
                   <ListItemText primary="Profile" />
                 </ListItem>
               </List>
-            </Box>
+            </SideListBarDashboard>
           </Drawer>
-        </Toolbar>
+        </ToolbarDashboard>
       </AppBar>
 
       <FullPageWrapper>
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="caption table">
+          <TableDashboard aria-label="caption table">
             <TableHead>
               <TableRow>
                 <TableCell>User ID</TableCell>
@@ -181,24 +120,20 @@ const UsersPage: React.FC = () => {
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <TableRow
+                <TableRowDashboard
                   key={row.user_id}
                   hover
                   onClick={() => handleRowClickUser(row.user_id)}
-                  sx={{
-                    '&:last-child td, &:last-child th': { border: 0 },
-                    cursor: 'pointer',
-                  }}
                 >
                   <TableCell component="th" scope="row">
                     {row.user_id}
                   </TableCell>
                   <TableCell align="right">{row.user_name}</TableCell>
                   <TableCell align="right">{row.user_email}</TableCell>
-                </TableRow>
+                </TableRowDashboard>
               ))}
             </TableBody>
-          </Table>
+          </TableDashboard>
         </TableContainer>
       </FullPageWrapper>
     </>

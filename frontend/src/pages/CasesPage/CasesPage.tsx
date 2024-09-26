@@ -1,16 +1,11 @@
 import React, { FC, useState } from 'react';
 import {
   AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
   Drawer,
   List,
   ListItem,
   ListItemText,
-  Box,
   TableContainer,
-  Table,
   TableHead,
   Paper,
   TableRow,
@@ -18,15 +13,17 @@ import {
   TableBody,
 } from '@mui/material';
 import Menu from '@mui/icons-material/Menu';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import {
-  AppBarContainer,
-  AppBarText,
-} from '../DashboardPage/DashboardPage.styles';
 import { useNavigate } from 'react-router-dom';
-import theme from '../../theme/theme';
-import { FullPageWrapper } from '../../styles/common.styles';
+import {
+  FullPageWrapper,
+  IconButtonDashboard,
+  ToolbarDashboard,
+  SideListBarDashboard,
+  SideListBarName,
+  TableDashboard,
+  TableRowDashboard,
+} from '../../styles/common.styles';
+import AppbarDashboard from '../../components/AppbarDashboard/AppbarDashboard';
 
 const CasesPage: FC = () => {
   const navigate = useNavigate();
@@ -43,14 +40,6 @@ const CasesPage: FC = () => {
   const handleClickProfile = () => {
     navigate('/profile');
   };
-
-  const handleClickHome = () => {
-    navigate('/landing');
-  };
-
-  // const handleRowClickUser = (user_id: number) => {
-  //   navigate(`/profile/${user_id}`);
-  // };
 
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -88,69 +77,25 @@ const CasesPage: FC = () => {
   return (
     <>
       <AppBar position="static">
-        <Toolbar sx={{ justifyContent: 'flex-end' }}>
-          <IconButton
+        <ToolbarDashboard>
+          <IconButtonDashboard
             size="large"
             edge="start"
             color="inherit"
             aria-label="menu"
-            sx={{ display: { xs: 'flex', md: 'none' } }} // Show only on mobile screens
             onClick={toggleDrawer(true)}
           >
             <Menu />
-          </IconButton>
+          </IconButtonDashboard>
 
-          <Typography
-            variant="h6"
-            component="div"
-            onClick={handleClickHome}
-            sx={{
-              cursor: 'pointer',
-              flexGrow: 1,
-              marginRight: { xs: 0, md: 48 },
-            }} // Adjust margin based on screen size
-          >
-            Help Finder
-          </Typography>
-
-          <AppBarContainer sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <AppBarText variant="h6" onClick={handleClickUsers}>
-              Users
-            </AppBarText>
-            <AppBarText
-              variant="h6"
-              onClick={handleClickCases}
-              sx={{
-                color: theme.palette.secondary.contrastText,
-              }}
-            >
-              Cases
-            </AppBarText>
-            <IconButton
-              size="large"
-              color="inherit"
-              aria-label="notifications"
-              onClick={() => console.log('Account button clicked')}
-            >
-              <NotificationsIcon />
-            </IconButton>
-            <IconButton
-              size="large"
-              color="inherit"
-              aria-label="account"
-              onClick={handleClickProfile}
-            >
-              <AccountCircle />
-            </IconButton>
-          </AppBarContainer>
+          <AppbarDashboard selectedTab={'cases'} />
 
           <Drawer
             anchor="left"
             open={isDrawerOpen}
             onClose={toggleDrawer(false)}
           >
-            <Box
-              sx={{ width: 250 }}
+            <SideListBarDashboard
               role="presentation"
               onClick={toggleDrawer(false)}
               onKeyDown={toggleDrawer(false)}
@@ -159,31 +104,21 @@ const CasesPage: FC = () => {
                 <ListItem component="button" onClick={handleClickUsers}>
                   <ListItemText primary="Users" />
                 </ListItem>
-                <ListItem
-                  component="button"
-                  onClick={handleClickCases}
-                  sx={{
-                    backgroundColor: theme.palette.primary.main,
-                    color: theme.palette.primary.contrastText,
-                    '&:hover': {
-                      backgroundColor: theme.palette.primary.dark,
-                    },
-                  }}
-                >
+                <SideListBarName onClick={handleClickCases}>
                   <ListItemText primary="Cases" />
-                </ListItem>
+                </SideListBarName>
                 <ListItem component="button" onClick={handleClickProfile}>
                   <ListItemText primary="Profile" />
                 </ListItem>
               </List>
-            </Box>
+            </SideListBarDashboard>
           </Drawer>
-        </Toolbar>
+        </ToolbarDashboard>
       </AppBar>
 
       <FullPageWrapper>
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }} aria-label="caption table">
+          <TableDashboard aria-label="caption table">
             <TableHead>
               <TableRow>
                 <TableCell>Case ID</TableCell>
@@ -195,15 +130,7 @@ const CasesPage: FC = () => {
             </TableHead>
             <TableBody>
               {rows.map((row) => (
-                <TableRow
-                  key={row.case_id}
-                  hover
-                  // onClick={() => handleRowClickUser(row.case_id)}
-                  sx={{
-                    '&:last-child td, &:last-child th': { border: 0 },
-                    cursor: 'pointer',
-                  }}
-                >
+                <TableRowDashboard key={row.case_id} hover>
                   <TableCell component="th" scope="row">
                     {row.case_id}
                   </TableCell>
@@ -211,10 +138,10 @@ const CasesPage: FC = () => {
                   <TableCell align="right">{row.user_name}</TableCell>
                   <TableCell align="right">{row.date_opened}</TableCell>
                   <TableCell align="right">{row.status}</TableCell>
-                </TableRow>
+                </TableRowDashboard>
               ))}
             </TableBody>
-          </Table>
+          </TableDashboard>
         </TableContainer>
       </FullPageWrapper>
     </>
