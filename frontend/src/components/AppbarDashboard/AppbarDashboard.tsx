@@ -3,48 +3,23 @@ import {
   AppBarContainerDashboard,
   AppHeaderDashboard,
 } from '../../styles/common.styles';
-import { AppBarText } from '../../pages/DashboardPage/DashboardPage.styles';
 import { IconButton } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { useNavigate } from 'react-router-dom';
+import { AppBarText } from './AppbarDashboard.styles';
 
-interface selectedTabprops {
-  selectedTab?: string;
+interface AppbarDashboardProps {
+  selectedTab: string;
+  onTabSelect: (tabName: string) => void;
 }
 
-const AppbarDashboard: FC<selectedTabprops> = ({ selectedTab }) => {
-  const navigate = useNavigate();
-  //   const [selectedTab, setSelectedTab] = useState('users');
-
-  const handleTabSelection = (tabName: string) => {
-    // setSelectedTab(tabName);
-    console.log(tabName);
-    switch (tabName) {
-      case 'cases':
-        navigate('/cases');
-        break;
-      case 'users':
-        navigate('/users');
-        break;
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'home':
-        navigate('/landing');
-        break;
-      default:
-        navigate('/dashboard');
-        break;
-    }
-  };
-
+const AppbarDashboard: FC<AppbarDashboardProps> = ({
+  selectedTab,
+  onTabSelect,
+}) => {
   return (
     <>
-      <AppHeaderDashboard
-        variant="h6"
-        onClick={() => handleTabSelection('home')}
-      >
+      <AppHeaderDashboard variant="h6" onClick={() => onTabSelect('home')}>
         Help Finder
       </AppHeaderDashboard>
 
@@ -52,14 +27,14 @@ const AppbarDashboard: FC<selectedTabprops> = ({ selectedTab }) => {
         <AppBarText
           variant="h6"
           isSelected={selectedTab === 'users'}
-          onClick={() => handleTabSelection('users')}
+          onClick={() => onTabSelect('users')}
         >
           Users
         </AppBarText>
         <AppBarText
           variant="h6"
           isSelected={selectedTab === 'cases'}
-          onClick={() => handleTabSelection('cases')}
+          onClick={() => onTabSelect('cases')}
         >
           Cases
         </AppBarText>
@@ -67,7 +42,7 @@ const AppbarDashboard: FC<selectedTabprops> = ({ selectedTab }) => {
           size="large"
           color="inherit"
           aria-label="notifications"
-          onClick={() => console.log('Account button clicked')}
+          onClick={() => console.log('Notifications button clicked')}
         >
           <NotificationsIcon />
         </IconButton>
@@ -75,7 +50,7 @@ const AppbarDashboard: FC<selectedTabprops> = ({ selectedTab }) => {
           size="large"
           color="inherit"
           aria-label="account"
-          onClick={() => handleTabSelection('profile')}
+          onClick={() => onTabSelect('profile')}
         >
           <AccountCircle />
         </IconButton>

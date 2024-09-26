@@ -1,5 +1,6 @@
 import { Box, Container, styled, IconButton, ListItem, Table, TableRow, Toolbar, Typography } from "@mui/material";
-import { AppBarContainer, AppBarText } from "../pages/DashboardPage/DashboardPage.styles";
+import { AppBarContainer } from "../pages/DashboardPage/DashboardPage.styles";
+import { AppBarText } from "../components/AppbarDashboard/AppbarDashboard.styles";
 
 export const FullPageWrapper = styled(Container)(({ theme }) => ({
     textAlign: 'center', 
