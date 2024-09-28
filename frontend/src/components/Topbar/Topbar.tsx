@@ -2,42 +2,35 @@ import { FC } from 'react';
 import { IconButton } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import {
-  AppBarContainerDashboard,
-  AppBarText,
-  AppHeaderDashboard,
-} from './AppbarDashboard.styles';
+import { TopbarContainer, TopbarText, TopbarHeader } from './Topbar.styles';
 
-interface AppbarDashboardProps {
+interface TopbarProps {
   selectedTab: string;
   onTabSelect: (tabName: string) => void;
 }
 
-const AppbarDashboard: FC<AppbarDashboardProps> = ({
-  selectedTab,
-  onTabSelect,
-}) => {
+const Topbar: FC<TopbarProps> = ({ selectedTab, onTabSelect }) => {
   return (
     <>
-      <AppHeaderDashboard variant="h6" onClick={() => onTabSelect('home')}>
+      <TopbarHeader variant="h6" onClick={() => onTabSelect('home')}>
         Help Finder
-      </AppHeaderDashboard>
+      </TopbarHeader>
 
-      <AppBarContainerDashboard>
-        <AppBarText
+      <TopbarContainer>
+        <TopbarText
           variant="h6"
           isSelected={selectedTab === 'users'}
           onClick={() => onTabSelect('users')}
         >
           Users
-        </AppBarText>
-        <AppBarText
+        </TopbarText>
+        <TopbarText
           variant="h6"
           isSelected={selectedTab === 'cases'}
           onClick={() => onTabSelect('cases')}
         >
           Cases
-        </AppBarText>
+        </TopbarText>
         <IconButton
           size="large"
           color="inherit"
@@ -54,9 +47,9 @@ const AppbarDashboard: FC<AppbarDashboardProps> = ({
         >
           <AccountCircle />
         </IconButton>
-      </AppBarContainerDashboard>
+      </TopbarContainer>
     </>
   );
 };
 
-export default AppbarDashboard;
+export default Topbar;

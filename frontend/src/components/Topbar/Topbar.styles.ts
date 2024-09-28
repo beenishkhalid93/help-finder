@@ -1,6 +1,6 @@
 import { Box, styled, Typography } from "@mui/material";
 
-export const AppBarText = styled(Typography)<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+export const TopbarText = styled(Typography)<{ isSelected: boolean }>(({ theme, isSelected }) => ({
     flexGrow: 1,
     cursor: 'pointer',
     marginRight: theme.spacing(2), // Use theme.spacing for consistent margin
@@ -8,7 +8,7 @@ export const AppBarText = styled(Typography)<{ isSelected: boolean }>(({ theme, 
     color: isSelected ? theme.palette.secondary.contrastText : 'inherit', // Conditional text color
   }));
 
-export const AppHeaderDashboard = styled(Typography)(({theme}) => ({
+export const TopbarHeader = styled(Typography)(({theme}) => ({
     cursor: 'pointer',
     flexGrow: 1,
     marginRight: 0, 
@@ -17,7 +17,7 @@ export const AppHeaderDashboard = styled(Typography)(({theme}) => ({
 },
 }));
 
-export const AppBarContainerDashboard = styled(Box)(({theme}) => ({
+export const TopbarContainer= styled(Box)(({theme}) => ({
     alignItems: 'center',
     gap: 10,
     display: 'none',

@@ -5,14 +5,14 @@ import {
   IconButtonDashboard,
   SideListBarDashboard,
   SideListBarName,
-} from './SidePanelDashboard.styles';
+} from './VerticalNavbar.styles';
 
-interface SidePanelProps {
+interface VerticalNavbarProps {
   selectedTab: string;
   onTabSelect: (tabName: string) => void;
 }
 
-const SidePanelDashboard: FC<SidePanelProps> = ({
+const VerticalNavbar: FC<VerticalNavbarProps> = ({
   selectedTab,
   onTabSelect,
 }) => {
@@ -72,4 +72,4 @@ const SidePanelDashboard: FC<SidePanelProps> = ({
     </>
   );
 };
-export default SidePanelDashboard;
+export default VerticalNavbar;

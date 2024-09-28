@@ -1,5 +1,5 @@
 import { styled, Toolbar } from "@mui/material";
 
-export const ToolbarDashboard = styled(Toolbar)(() => ( {
+export const NavbarContainer = styled(Toolbar)(() => ( {
     justifyContent: 'flex-end',
 }));
