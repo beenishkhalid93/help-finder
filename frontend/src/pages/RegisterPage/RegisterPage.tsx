@@ -52,7 +52,7 @@ const RegisterPage: FC = () => {
       isValidEmail(emailText) &&
       isValidPassword(passwordText)
     ) {
-      navigate('/profile');
+      navigate('/dashboard');
     }
   }
 

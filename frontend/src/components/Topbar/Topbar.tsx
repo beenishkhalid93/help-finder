@@ -19,14 +19,14 @@ const Topbar: FC<TopbarProps> = ({ selectedTab, onTabSelect }) => {
       <TopbarContainer>
         <TopbarText
           variant="h6"
-          isSelected={selectedTab === 'users'}
+          isselected={selectedTab === 'users'}
           onClick={() => onTabSelect('users')}
         >
           Users
         </TopbarText>
         <TopbarText
           variant="h6"
-          isSelected={selectedTab === 'cases'}
+          isselected={selectedTab === 'cases'}
           onClick={() => onTabSelect('cases')}
         >
           Cases

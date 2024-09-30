@@ -1,11 +1,17 @@
 import { Box, styled, Typography } from "@mui/material";
 
-export const TopbarText = styled(Typography)<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+interface TopbarTextProps {
+    isselected: boolean;
+}
+
+export const TopbarText = styled(Typography, {
+    shouldForwardProp: (prop) => prop !== 'isselected'
+})<TopbarTextProps>(({ theme, isselected }) => ({
     flexGrow: 1,
     cursor: 'pointer',
     marginRight: theme.spacing(2), // Use theme.spacing for consistent margin
-    fontWeight: isSelected ? 'bold' : 'normal', // Bold text for selected tab
-    color: isSelected ? theme.palette.secondary.contrastText : 'inherit', // Conditional text color
+    fontWeight: isselected ? 'bold' : 'normal', // Bold text for selected tab
+    color: isselected ? theme.palette.secondary.contrastText : 'inherit', // Conditional text color
   }));
 
 export const TopbarHeader = styled(Typography)(({theme}) => ({

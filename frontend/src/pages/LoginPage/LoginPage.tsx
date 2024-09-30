@@ -30,7 +30,7 @@ const LoginPage: FC = () => {
     setEmailError(!isValidEmail(emailText));
     setPasswordError(!isValidPassword(passwordText));
     if (isValidEmail(emailText) && isValidPassword(passwordText)) {
-      navigate('/profile');
+      navigate('/dashboard');
     }
   }
 

@@ -1,10 +1,7 @@
-import { Box, styled, Typography } from '@mui/material';
+import { Avatar, styled } from '@mui/material';
 
-export const UserDataContainer = styled(Box)(() => ({
-  display: 'flex',
-  flexDirection: 'column',
-}));
-
-export const TextfieldName = styled(Typography)(() => ({
-  cursor: 'pointer',
+export const PictureContainer = styled(Avatar)(() => ({
+  width: 150,
+  height: 150,
+  marginBottom: 5,
 }));
