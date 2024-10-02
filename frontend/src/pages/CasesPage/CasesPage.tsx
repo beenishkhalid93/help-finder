@@ -8,22 +8,14 @@ import {
   TableBody,
   Tooltip,
   IconButton,
-  Modal,
   Box,
-  TextField,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
 import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
+import { Edit, Delete } from '@mui/icons-material';
+import CustomTextField from '../../components/CustomTextField/CustomTextField';
+import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
+import CustomModel from '../../components/CustommModel/CustomModel';
 
-// Define the type for a user
 interface Case {
   id: number;
   title: string;
@@ -51,32 +43,29 @@ const initialCases: Case[] = [
 
 const CasesPage: FC = () => {
   const [cases, setCases] = useState<Case[]>(initialCases);
-  const [editingCase, setEditingCase] = useState<Case | null>(null); // Track the user being edited
-  const [open, setOpen] = useState<boolean>(false); // Track if the modal is open
-  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false); // Track if the delete confirmation dialog is open
-  const [deletingCaseId, setDeletingCaseId] = useState<number | null>(null); // Track the user being deleted
+  const [editingCase, setEditingCase] = useState<Case | null>(null);
+  const [open, setOpen] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [deletingCaseId, setDeletingCaseId] = useState<number | null>(null);
 
-  // Handle opening the modal
   const handleEditClick = (caseData: Case) => {
-    setEditingCase(caseData); // Set the current user to edit
-    setOpen(true); // Open the modal
+    setEditingCase(caseData);
+    setOpen(true);
   };
 
-  // Handle closing the modal
   const handleClose = () => {
     setOpen(false);
-    setEditingCase(null); // Clear the editing user on close
+    setEditingCase(null);
   };
 
-  // Handle field changes in the form
   const handleFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+    console.log('Name', name, 'Value', value);
     setEditingCase((prevCase) =>
       prevCase ? { ...prevCase, [name]: value } : null,
     );
   };
 
-  // Save the changes and update the user list
   const handleSaveClick = () => {
     if (editingCase) {
       setCases((prevCases) =>
@@ -85,29 +74,26 @@ const CasesPage: FC = () => {
         ),
       );
     }
-    handleClose(); // Close the modal after saving
+    handleClose();
   };
 
-  // Handle opening the delete confirmation dialog
   const handleDeleteClick = (caseDataId: number) => {
-    setDeletingCaseId(caseDataId); // Set the user to be deleted
-    setOpenDeleteDialog(true); // Open the confirmation dialog
+    setDeletingCaseId(caseDataId);
+    setOpenDeleteDialog(true);
   };
 
-  // Handle closing the delete confirmation dialog
   const handleDeleteClose = () => {
     setOpenDeleteDialog(false);
-    setDeletingCaseId(null); // Clear the user to be deleted on close
+    setDeletingCaseId(null);
   };
 
-  // Confirm delete and remove the user from the list
   const handleConfirmDelete = () => {
     if (deletingCaseId !== null) {
       setCases((prevCases) =>
         prevCases.filter((caseData) => caseData.id !== deletingCaseId),
       );
     }
-    handleDeleteClose(); // Close the dialog after deleting
+    handleDeleteClose();
   };
 
   return (
@@ -140,7 +126,7 @@ const CasesPage: FC = () => {
                       color="primary"
                       onClick={() => handleEditClick(caseData)}
                     >
-                      <EditIcon />
+                      <Edit />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
@@ -148,7 +134,7 @@ const CasesPage: FC = () => {
                       color="primary"
                       onClick={() => handleDeleteClick(caseData.id)}
                     >
-                      <DeleteIcon />
+                      <Delete />
                     </IconButton>
                   </Tooltip>
                 </TableCell>
@@ -158,101 +144,50 @@ const CasesPage: FC = () => {
         </TableDashboard>
       </TableContainer>
 
-      {/* Edit User Modal */}
-      {/* Modal for Editing User */}
-      <Modal
+      {/* Edit Case Modal */}
+      <CustomModel
         open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            borderRadius: '8px',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <h2 id="modal-modal-title">Edit User</h2>
-          {editingCase && (
-            <>
-              <TextField
-                margin="dense"
-                label="Title"
-                name="title"
+        handleClose={handleClose}
+        handleSave={handleSaveClick}
+        label={'Edit Case'}
+        ModelBody={
+          editingCase && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <CustomTextField
+                label={'Title'}
+                name={'title'}
                 value={editingCase.title}
                 onChange={handleFieldChange}
-                fullWidth
               />
-              <TextField
-                margin="dense"
-                label="User Name"
-                name="user_name"
+              <CustomTextField
+                label={'User Name'}
+                name={'name'}
                 value={editingCase.name}
                 onChange={handleFieldChange}
-                fullWidth
               />
-              <TextField
-                margin="dense"
-                label="Date Opened"
-                name="data_opened"
+              <CustomTextField
+                label={'Date Opened'}
+                name={'date_opened'}
                 value={editingCase.date_opened}
                 onChange={handleFieldChange}
-                fullWidth
               />
-              <TextField
-                margin="dense"
-                label="Status"
-                name="status"
+              <CustomTextField
+                label={'Status'}
+                name={'status'}
                 value={editingCase.status}
                 onChange={handleFieldChange}
-                fullWidth
               />
-            </>
-          )}
-          <Box
-            mt={2}
-            sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}
-          >
-            <Button
-              onClick={handleClose}
-              color="secondary"
-              startIcon={<CancelIcon />}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSaveClick}
-              color="primary"
-              startIcon={<SaveIcon />}
-            >
-              Save
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+            </Box>
+          )
+        }
+      />
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={openDeleteDialog} onClose={handleDeleteClose}>
-        <DialogTitle>{'Delete Confirmation'}</DialogTitle>
-        <DialogContent>
-          {'Are you sure you want to delete this user?'}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleConfirmDelete} color="primary" autoFocus>
-            Yes
-          </Button>
-          <Button onClick={handleDeleteClose} color="primary">
-            No
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmationDialog
+        openDeleteDialog={openDeleteDialog}
+        handleDeleteClose={handleDeleteClose}
+        handleConfirmDelete={handleConfirmDelete}
+      />
     </FullPageWrapper>
   );
 };

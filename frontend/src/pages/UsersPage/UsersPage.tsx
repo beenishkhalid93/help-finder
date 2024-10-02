@@ -8,21 +8,14 @@ import {
   TableBody,
   IconButton,
   Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  TextField,
-  DialogActions,
-  Button,
-  Modal,
   Box,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Cancel';
+import { Edit, Delete } from '@mui/icons-material';
+import CustomTextField from '../../components/CustomTextField/CustomTextField';
+import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
+import CustomModel from '../../components/CustommModel/CustomModel';
 
 // Define the type for a user
 interface User {
@@ -145,7 +138,7 @@ const UsersPage: FC = () => {
                       color="primary"
                       onClick={() => handleEditClick(user)}
                     >
-                      <EditIcon />
+                      <Edit />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
@@ -153,7 +146,7 @@ const UsersPage: FC = () => {
                       color="primary"
                       onClick={() => handleDeleteClick(user.id)}
                     >
-                      <DeleteIcon />
+                      <Delete />
                     </IconButton>
                   </Tooltip>
                 </TableCell>
@@ -164,92 +157,43 @@ const UsersPage: FC = () => {
       </TableContainer>
 
       {/* Edit User Modal */}
-      {/* Modal for Editing User */}
-      <Modal
+      <CustomModel
         open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            borderRadius: '8px',
-            boxShadow: 24,
-            p: 4,
-          }}
-        >
-          <h2 id="modal-modal-title">Edit User</h2>
-          {editingUser && (
-            <>
-              <TextField
-                margin="dense"
-                label="Full Name"
-                name="name"
+        handleClose={handleClose}
+        label={'Edit User'}
+        handleSave={handleSaveClick}
+        ModelBody={
+          editingUser && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <CustomTextField
+                label={'Full Name'}
+                name={'name'}
                 value={editingUser.name}
                 onChange={handleFieldChange}
-                fullWidth
               />
-              <TextField
-                margin="dense"
-                label="Email"
-                name="email"
+              <CustomTextField
+                label={'Email'}
+                name={'email'}
                 value={editingUser.email}
                 onChange={handleFieldChange}
-                fullWidth
               />
-              <TextField
-                margin="dense"
-                label="Phone"
-                name="phone"
+              <CustomTextField
+                label={'Phone'}
+                name={'phone'}
                 value={editingUser.phone}
                 onChange={handleFieldChange}
-                fullWidth
               />
-            </>
-          )}
-          <Box
-            mt={2}
-            sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}
-          >
-            <Button
-              onClick={handleClose}
-              color="secondary"
-              startIcon={<CancelIcon />}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSaveClick}
-              color="primary"
-              startIcon={<SaveIcon />}
-            >
-              Save
-            </Button>
-          </Box>
-        </Box>
-      </Modal>
+            </Box>
+          )
+        }
+      />
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={openDeleteDialog} onClose={handleDeleteClose}>
-        <DialogTitle>{'Delete Confirmation'}</DialogTitle>
-        <DialogContent>
-          {'Are you sure you want to delete this user?'}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleConfirmDelete} color="primary" autoFocus>
-            Yes
-          </Button>
-          <Button onClick={handleDeleteClose} color="primary">
-            No
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmationDialog
+        openDeleteDialog={openDeleteDialog}
+        handleDeleteClose={handleDeleteClose}
+        handleConfirmDelete={handleConfirmDelete}
+      />
     </FullPageWrapper>
   );
 };
