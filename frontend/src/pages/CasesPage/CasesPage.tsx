@@ -8,11 +8,10 @@ import {
   TableBody,
   Tooltip,
   IconButton,
-  Box,
+  Fab,
 } from '@mui/material';
 import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
-import { Edit, Delete } from '@mui/icons-material';
-import CustomTextField from '../../components/CustomTextField/CustomTextField';
+import { Edit, Delete, Add } from '@mui/icons-material';
 import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
 import CustomModel from '../../components/CustommModel/CustomModel';
 
@@ -42,6 +41,7 @@ const initialCases: Case[] = [
 ];
 
 const CasesPage: FC = () => {
+  const [mode, setMode] = useState<'edit' | 'add'>('add');
   const [cases, setCases] = useState<Case[]>(initialCases);
   const [editingCase, setEditingCase] = useState<Case | null>(null);
   const [open, setOpen] = useState<boolean>(false);
@@ -49,6 +49,7 @@ const CasesPage: FC = () => {
   const [deletingCaseId, setDeletingCaseId] = useState<number | null>(null);
 
   const handleEditClick = (caseData: Case) => {
+    setMode('edit');
     setEditingCase(caseData);
     setOpen(true);
   };
@@ -58,22 +59,17 @@ const CasesPage: FC = () => {
     setEditingCase(null);
   };
 
-  const handleFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    console.log('Name', name, 'Value', value);
-    setEditingCase((prevCase) =>
-      prevCase ? { ...prevCase, [name]: value } : null,
-    );
-  };
-
-  const handleSaveClick = () => {
-    if (editingCase) {
+  const handleSaveClick = (data: Case) => {
+    console.log(data);
+    initialCases.push(data);
+    console.log(initialCases);
+    /*   if (editingCase) {
       setCases((prevCases) =>
         prevCases.map((caseData) =>
           caseData.id === editingCase.id ? editingCase : caseData,
         ),
       );
-    }
+    } */
     handleClose();
   };
 
@@ -94,6 +90,12 @@ const CasesPage: FC = () => {
       );
     }
     handleDeleteClose();
+  };
+
+  const handleAddCaseClick = () => {
+    setMode('add');
+    setEditingCase(null);
+    setOpen(true);
   };
 
   return (
@@ -144,42 +146,30 @@ const CasesPage: FC = () => {
         </TableDashboard>
       </TableContainer>
 
+      <Fab
+        variant="extended"
+        color="primary"
+        aria-label="add"
+        onClick={handleAddCaseClick}
+        sx={{ margin: 2 }}
+      >
+        <Add sx={{ mr: 1 }} />
+        Add Case
+      </Fab>
+
       {/* Edit Case Modal */}
       <CustomModel
         open={open}
         handleClose={handleClose}
         handleSave={handleSaveClick}
-        label={'Edit Case'}
-        ModelBody={
-          editingCase && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <CustomTextField
-                label={'Title'}
-                name={'title'}
-                value={editingCase.title}
-                onChange={handleFieldChange}
-              />
-              <CustomTextField
-                label={'User Name'}
-                name={'name'}
-                value={editingCase.name}
-                onChange={handleFieldChange}
-              />
-              <CustomTextField
-                label={'Date Opened'}
-                name={'date_opened'}
-                value={editingCase.date_opened}
-                onChange={handleFieldChange}
-              />
-              <CustomTextField
-                label={'Status'}
-                name={'status'}
-                value={editingCase.status}
-                onChange={handleFieldChange}
-              />
-            </Box>
-          )
-        }
+        label={'Case'}
+        mode={mode}
+        initialData={{
+          title: editingCase?.title ?? '',
+          name: editingCase?.name ?? '',
+          dateOpened: editingCase?.date_opened ?? '',
+          status: editingCase?.status ?? '',
+        }}
       />
 
       {/* Delete Confirmation Dialog */}

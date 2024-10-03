@@ -50,7 +50,7 @@ const UsersPage: FC = () => {
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null); // Track the user being deleted
 
   const handleRowClickUser = (user_id: number) => {
-    navigate(`/profile/${user_id}`);
+    navigate(`/dashboard/profile/${user_id}`);
   };
 
   // Handle opening the modal

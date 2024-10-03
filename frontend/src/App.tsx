@@ -23,14 +23,13 @@ const App: FC = () => {
         <Route path="/dashboard/*" element={<DashboardLayout />}>
           <Route path="users" element={<UsersPage />} />
           <Route path="cases" element={<CasesPage />} />
-          <Route path="profile" element={<ProfilePage />} />{' '}
-          <Route path="" element={<DashboardPage />} />{' '}
-          {/* <Route path="profile" element={<ProfilePage />} />{' '} */}
-          {/* Default dashboard route */}
+          <Route path="profile" element={<ProfilePage />} />
+          <Route path="" element={<DashboardPage />} />
+          <Route path="profile/:user" element={<ProfilePage />} />
         </Route>
 
         {/* Profile can be under dashboard layout or separate, depending on your need */}
-        <Route path="/profile/:user" element={<ProfilePage />} />
+        {/* <Route path="/profile/:user" element={<ProfilePage />} /> */}
       </Routes>
     </BrowserRouter>
   );
