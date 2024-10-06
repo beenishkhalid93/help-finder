@@ -8,17 +8,15 @@ import {
   TableBody,
   IconButton,
   Tooltip,
-  Box,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
 import { Edit, Delete } from '@mui/icons-material';
-import CustomTextField from '../../components/CustomTextField/CustomTextField';
 import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
-import CustomModel from '../../components/CustommModel/CustomModel';
+import UserModel from '../../components/UserModel/UserModel';
 
 // Define the type for a user
-interface User {
+export interface User {
   id: number;
   name: string;
   email: string;
@@ -53,58 +51,55 @@ const UsersPage: FC = () => {
     navigate(`/dashboard/profile/${user_id}`);
   };
 
-  // Handle opening the modal
   const handleEditClick = (user: User) => {
-    setEditingUser(user); // Set the current user to edit
-    setOpen(true); // Open the modal
+    setEditingUser(user);
+    setOpen(true);
   };
 
-  // Handle closing the modal
   const handleClose = () => {
     setOpen(false);
-    setEditingUser(null); // Clear the editing user on close
+    setEditingUser(null);
   };
 
-  // Handle field changes in the form
-  const handleFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setEditingUser((prevUser) =>
-      prevUser ? { ...prevUser, [name]: value } : null,
-    );
-  };
-
-  // Save the changes and update the user list
-  const handleSaveClick = () => {
+  const handleSaveClick = (data: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+  }) => {
     if (editingUser) {
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.id === editingUser.id ? editingUser : user,
+      setUsers((prevCases) =>
+        prevCases.map((editingUser) =>
+          data.id === editingUser.id ? data : editingUser,
         ),
       );
+    } else {
+      const newId = initialUsers.length + 1;
+      data['id'] = newId;
+      initialUsers.push(data);
+      setUsers(initialUsers);
     }
-    handleClose(); // Close the modal after saving
+
+    handleClose();
   };
 
-  // Handle opening the delete confirmation dialog
   const handleDeleteClick = (userId: number) => {
-    setDeletingUserId(userId); // Set the user to be deleted
-    setOpenDeleteDialog(true); // Open the confirmation dialog
+    setDeletingUserId(userId);
+    setOpenDeleteDialog(true);
   };
 
-  // Handle closing the delete confirmation dialog
   const handleDeleteClose = () => {
     setOpenDeleteDialog(false);
-    setDeletingUserId(null); // Clear the user to be deleted on close
+    setDeletingUserId(null);
   };
 
-  // Confirm delete and remove the user from the list
   const handleConfirmDelete = () => {
     if (deletingUserId !== null) {
       setUsers((prevUsers) =>
         prevUsers.filter((user) => user.id !== deletingUserId),
       );
     }
-    handleDeleteClose(); // Close the dialog after deleting
+    handleDeleteClose();
   };
 
   return (
@@ -157,35 +152,13 @@ const UsersPage: FC = () => {
       </TableContainer>
 
       {/* Edit User Modal */}
-      <CustomModel
+      <UserModel
         open={open}
         handleClose={handleClose}
         label={'Edit User'}
-        handleSave={handleSaveClick}
-        ModelBody={
-          editingUser && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <CustomTextField
-                label={'Full Name'}
-                name={'name'}
-                value={editingUser.name}
-                onChange={handleFieldChange}
-              />
-              <CustomTextField
-                label={'Email'}
-                name={'email'}
-                value={editingUser.email}
-                onChange={handleFieldChange}
-              />
-              <CustomTextField
-                label={'Phone'}
-                name={'phone'}
-                value={editingUser.phone}
-                onChange={handleFieldChange}
-              />
-            </Box>
-          )
-        }
+        handleSave={(data) => handleSaveClick(data)}
+        mode={'edit'}
+        initialData={editingUser ?? undefined}
       />
 
       {/* Delete Confirmation Dialog */}

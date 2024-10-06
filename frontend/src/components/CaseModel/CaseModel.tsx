@@ -1,29 +1,20 @@
 import { Box, Button, Modal, Typography } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
-import { ModelActionContainer, ModelContainer } from './CustomModel.styles';
+import { ModelActionContainer, ModelContainer } from './CaseModel.styles';
 import { Save, Cancel } from '@mui/icons-material';
 import CustomTextField from '../CustomTextField/CustomTextField';
+import { Case } from '../../pages/CasesPage/CasesPage';
 
-interface CustomModelProps {
+interface CaseModelProps {
   open: boolean;
   label: string;
   mode: string;
-  initialData: {
-    title: string;
-    name: string;
-    dateOpened: string;
-    status: string;
-  };
+  initialData: Case | undefined;
   handleClose: () => void;
-  handleSave: (data: {
-    name: string;
-    title: string;
-    dateOpened: string;
-    status: string;
-  }) => void;
+  handleSave: (data: Case) => void;
 }
 
-const CustomModel: FC<CustomModelProps> = ({
+const CaseModel: FC<CaseModelProps> = ({
   open,
   label,
   mode,
@@ -35,28 +26,44 @@ const CustomModel: FC<CustomModelProps> = ({
   const [name, setName] = useState('');
   const [dateOpened, setDateOpened] = useState('');
   const [status, setStatus] = useState('');
+  const [isSaveEnabled, setIsSaveEnabled] = useState(false); // State to track if the Save button should be enabled
 
   const handleClickSave = () => {
-    handleSave({ title, name, dateOpened, status });
+    const data = {
+      id: initialData?.id ?? 0,
+      title,
+      name,
+      dateOpened,
+      status,
+    };
+    handleSave(data);
   };
-  // useEffect to listen for changes in any of the state values
-  useEffect(() => {
-    // if (mode === 'edit' && initialData)
-    if (mode === 'edit' && initialData) {
-      console.log('One of the case fields changed:');
-      setTitle(initialData.title);
-      console.log('Title:', title);
-      setName(initialData.name);
-      console.log('Name:', name);
-      setDateOpened(initialData.dateOpened);
-      console.log('Date Opened:', dateOpened);
-      setStatus(initialData.status);
-      console.log('Status:', status);
-    }
-    // You can perform any action when one of these state variables changes
 
-    // For example, you could make an API call or update something
-  }, [mode, initialData, title, name, dateOpened, status]);
+  useEffect(() => {
+    if (open) {
+      if (mode === 'edit' && initialData) {
+        setTitle(initialData.title);
+        setName(initialData.name);
+        setDateOpened(initialData.dateOpened);
+        setStatus(initialData.status);
+      } else if (mode === 'add' && !initialData) {
+        setTitle('');
+        setName('');
+        setDateOpened('');
+        setStatus('');
+        setIsSaveEnabled(false);
+      }
+    }
+  }, [open, mode, initialData]);
+
+  useEffect(() => {
+    if (title || name || dateOpened || status) {
+      setIsSaveEnabled(true);
+    } else {
+      setIsSaveEnabled(false);
+    }
+  }, [title, name, dateOpened, status]);
+
   return (
     <Modal
       open={open}
@@ -79,28 +86,24 @@ const CustomModel: FC<CustomModelProps> = ({
             name={'title'}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            // onChange={(e) => setTitleCase(e.target.value)}
           />
           <CustomTextField
             label={'User Name'}
             name={'name'}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            // onChange={(e) => setNameCase(e.target.value)}
           />
           <CustomTextField
             label={'Date Opened'}
             name={'date_opened'}
             value={dateOpened}
             onChange={(e) => setDateOpened(e.target.value)}
-            // onChange={(e) => setDateOpenedCase(e.target.value)}
           />
           <CustomTextField
             label={'Status'}
             name={'status'}
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            // onChange={(e) => setStatusCase(e.target.value)}
           />
         </Box>
 
@@ -109,6 +112,7 @@ const CustomModel: FC<CustomModelProps> = ({
             onClick={handleClickSave}
             color="primary"
             startIcon={<Save />}
+            disabled={!isSaveEnabled}
           >
             Save
           </Button>
@@ -121,4 +125,4 @@ const CustomModel: FC<CustomModelProps> = ({
   );
 };
 
-export default CustomModel;
+export default CaseModel;

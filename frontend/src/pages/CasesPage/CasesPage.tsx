@@ -13,13 +13,13 @@ import {
 import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
 import { Edit, Delete, Add } from '@mui/icons-material';
 import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
-import CustomModel from '../../components/CustommModel/CustomModel';
+import CaseModel from '../../components/CaseModel/CaseModel';
 
-interface Case {
+export interface Case {
   id: number;
   title: string;
   name: string;
-  date_opened: string;
+  dateOpened: string;
   status: string;
 }
 
@@ -28,14 +28,14 @@ const initialCases: Case[] = [
     id: 1,
     title: 'Orphan center',
     name: 'Ikram ul haq',
-    date_opened: '24-sep-2024',
+    dateOpened: '24-sep-2024',
     status: 'Open',
   },
   {
     id: 2,
     title: 'Blood Donation center',
     name: 'Beenish Khalid',
-    date_opened: '15-feb-2024',
+    dateOpened: '15-feb-2024',
     status: 'In progress',
   },
 ];
@@ -55,21 +55,31 @@ const CasesPage: FC = () => {
   };
 
   const handleClose = () => {
+    setMode('add');
     setOpen(false);
     setEditingCase(null);
   };
 
-  const handleSaveClick = (data: Case) => {
-    console.log(data);
-    initialCases.push(data);
-    console.log(initialCases);
-    /*   if (editingCase) {
+  const handleSaveClick = (data: {
+    id: number;
+    name: string;
+    title: string;
+    dateOpened: string;
+    status: string;
+  }) => {
+    if (editingCase) {
       setCases((prevCases) =>
-        prevCases.map((caseData) =>
-          caseData.id === editingCase.id ? editingCase : caseData,
+        prevCases.map((editingCase) =>
+          data.id === editingCase.id ? data : editingCase,
         ),
       );
-    } */
+    } else {
+      const newId = initialCases.length + 1;
+      data['id'] = newId;
+      initialCases.push(data);
+      setCases(initialCases);
+    }
+
     handleClose();
   };
 
@@ -120,7 +130,7 @@ const CasesPage: FC = () => {
                 <TableCell>{caseData.id}</TableCell>
                 <TableCell>{caseData.title}</TableCell>
                 <TableCell>{caseData.name}</TableCell>
-                <TableCell>{caseData.date_opened}</TableCell>
+                <TableCell>{caseData.dateOpened}</TableCell>
                 <TableCell>{caseData.status}</TableCell>
                 <TableCell align="center" onClick={(e) => e.stopPropagation()}>
                   <Tooltip title="Edit">
@@ -145,7 +155,6 @@ const CasesPage: FC = () => {
           </TableBody>
         </TableDashboard>
       </TableContainer>
-
       <Fab
         variant="extended"
         color="primary"
@@ -158,20 +167,14 @@ const CasesPage: FC = () => {
       </Fab>
 
       {/* Edit Case Modal */}
-      <CustomModel
+      <CaseModel
         open={open}
         handleClose={handleClose}
-        handleSave={handleSaveClick}
-        label={'Case'}
+        handleSave={(data) => handleSaveClick(data)}
+        label={mode === 'edit' ? 'Edit Case' : 'Add Case'}
         mode={mode}
-        initialData={{
-          title: editingCase?.title ?? '',
-          name: editingCase?.name ?? '',
-          dateOpened: editingCase?.date_opened ?? '',
-          status: editingCase?.status ?? '',
-        }}
+        initialData={editingCase ?? undefined}
       />
-
       {/* Delete Confirmation Dialog */}
       <ConfirmationDialog
         openDeleteDialog={openDeleteDialog}
