@@ -6,9 +6,11 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "dev:frontend": "pnpm --filter frontend dev",
-    "dev:backend": "pnpm --filter backend start:dev",
-    "dev": "concurrently \"pnpm dev:frontend\" \"pnpm dev:backend\"",
+
+    "start": "concurrently \"pnpm --filter frontend dev\" \"cd django-backend && source venv/bin/activate && python manage.py runserver\"",
+    "frontend": "pnpm --filter frontend dev",
+    "backend": "cd django-backend && source venv/bin/activate && python manage.py runserver",
+  
     "test": "echo \"Error: no test specified\" && exit 1",
     "prettier": "prettier --write ."
   },
