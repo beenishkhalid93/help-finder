@@ -20,5 +20,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('api/', include('user.urls')),  # Add your users app API endpoints here
+    path('api/', include('users.urls')),  # Add your users app API endpoints here
 ]
