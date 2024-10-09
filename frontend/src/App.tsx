@@ -7,8 +7,6 @@ import DashboardLayout from './components/Layouts/DashboardLayout';
 import UsersPage from './pages/UsersPage/UsersPage';
 import CasesPage from './pages/CasesPage/CasesPage';
 import DashboardPage from './pages/DashboardPage/DashboardPage';
-import CreateUser from './pages/CreateUser';
-import UsersList from './pages/UsersList';
 import { FC } from 'react';
 
 const App: FC = () => {
@@ -20,8 +18,6 @@ const App: FC = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/landing" element={<LandingPage />} />
         <Route path="/" element={<LandingPage />} />
-        <Route path="/CreateUser" element={<CreateUser />} />
-        <Route path="/UsersList" element={<UsersList />} />
 
         {/* Pages with Navbar (Dashboard, Users, Cases) */}
         <Route path="/dashboard/*" element={<DashboardLayout />}>

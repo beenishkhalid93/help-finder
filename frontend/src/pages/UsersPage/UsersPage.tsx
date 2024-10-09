@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import {
   TableContainer,
   TableHead,
@@ -14,38 +14,48 @@ import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
 import { Edit, Delete } from '@mui/icons-material';
 import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
 import UserModel from '../../components/UserModel/UserModel';
+import axios from 'axios';
 
 // Define the type for a user
 export interface User {
   id: number;
-  name: string;
+  firstname: string;
+  surname: string;
   email: string;
-  phone: string;
 }
 
-const initialUsers: User[] = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890' },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    phone: '987-654-3210',
-  },
-  {
-    id: 3,
-    name: 'Bob Johnson',
-    email: 'bob@example.com',
-    phone: '456-123-7890',
-  },
-];
+const API_URL = 'http://localhost:8000/api/users/';
+
+const fetchUsers = async () => {
+  try {
+    const response = await axios.get<User[]>(API_URL);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+  }
+};
 
 const UsersPage: FC = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [users, setUsers] = useState<User[]>([]);
   const [editingUser, setEditingUser] = useState<User | null>(null); // Track the user being edited
   const [open, setOpen] = useState<boolean>(false); // Track if the modal is open
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false); // Track if the delete confirmation dialog is open
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null); // Track the user being deleted
+
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        const fetchedUsers = await fetchUsers();
+        setUsers(fetchedUsers);
+      } catch (error) {
+        console.error('Failed to load users', error);
+      }
+    };
+
+    loadUsers();
+  }, []);
 
   const handleRowClickUser = (user_id: number) => {
     navigate(`/dashboard/profile/${user_id}`);
@@ -63,21 +73,21 @@ const UsersPage: FC = () => {
 
   const handleSaveClick = (data: {
     id: number;
-    name: string;
+    firstname: string;
+    surname: string;
     email: string;
-    phone: string;
   }) => {
     if (editingUser) {
-      setUsers((prevCases) =>
-        prevCases.map((editingUser) =>
-          data.id === editingUser.id ? data : editingUser,
-        ),
-      );
+      // setUsers((prevCases) =>
+      //   prevCases.map((editingUser) =>
+      //     data.id === editingUser.id ? data : editingUser,
+      //   ),
+      // );
     } else {
-      const newId = initialUsers.length + 1;
-      data['id'] = newId;
-      initialUsers.push(data);
-      setUsers(initialUsers);
+      // const newId = initialUsers.length + 1;
+      // data['id'] = newId;
+      // initialUsers.push(data);
+      setUsers(data);
     }
 
     handleClose();
@@ -110,9 +120,9 @@ const UsersPage: FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
+              <TableCell>Firstname</TableCell>
+              <TableCell>Surname</TableCell>
               <TableCell>Email</TableCell>
-              <TableCell>Phone</TableCell>
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -124,9 +134,9 @@ const UsersPage: FC = () => {
                 sx={{ cursor: 'pointer' }}
               >
                 <TableCell>{user.id}</TableCell>
-                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.firstname}</TableCell>
+                <TableCell>{user.surname}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.phone}</TableCell>
                 <TableCell align="center" onClick={(e) => e.stopPropagation()}>
                   <Tooltip title="Edit">
                     <IconButton

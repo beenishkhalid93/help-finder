@@ -10,7 +10,7 @@ interface AuthButtonGroupProps {
   showLogin?: boolean;
   showRegister?: boolean;
   clickLogin?: () => void;
-  clickRegister?: () => void;
+  clickRegister?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const AuthButtonGroup: FC<AuthButtonGroupProps> = ({

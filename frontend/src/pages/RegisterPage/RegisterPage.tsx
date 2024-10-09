@@ -22,6 +22,29 @@ import {
   FullPageWrapper,
   TextFieldContainer,
 } from '../../styles/common.styles';
+import axios from 'axios';
+
+// Define the interface for a new user
+interface NewUser {
+  firstname: string;
+  surname: string;
+  email: string;
+  password: string;
+}
+
+// Define the API URL
+const API_URL = 'http://localhost:8000/api/users/';
+
+// Function to create a new user via POST request
+const createUser = async (userData: NewUser) => {
+  try {
+    const response = await axios.post(API_URL, userData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+};
 
 const RegisterPage: FC = () => {
   const navigate = useNavigate();
@@ -41,7 +64,10 @@ const RegisterPage: FC = () => {
     setShowPassword((prev: unknown) => !prev);
   };
 
-  function handleClickRegister(): void {
+  const handleClickRegister = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    e.preventDefault();
     setFirstnameError(!isValidFirstname(firstnameText));
     setSurnameError(!isValidSurname(surnameText));
     setEmailError(!isValidEmail(emailText));
@@ -52,9 +78,22 @@ const RegisterPage: FC = () => {
       isValidEmail(emailText) &&
       isValidPassword(passwordText)
     ) {
-      navigate('/dashboard');
+      // Create a new user object
+      const newUser: NewUser = {
+        firstname: firstnameText,
+        surname: surnameText,
+        email: emailText,
+        password: passwordText,
+      };
+      try {
+        const createdUser = await createUser(newUser);
+        console.log('User created:', createdUser);
+        navigate('/dashboard');
+      } catch (error) {
+        console.error('Error creating user:', error);
+      }
     }
-  }
+  };
 
   const handleFirstnameChange = (
     event: React.ChangeEvent<HTMLInputElement>,
