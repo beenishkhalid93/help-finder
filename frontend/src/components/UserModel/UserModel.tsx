@@ -22,17 +22,17 @@ const UserModel: FC<UserModelProps> = ({
   handleClose,
   handleSave,
 }) => {
-  const [name, setName] = useState('');
+  const [firstname, setFirstname] = useState('');
+  const [surname, setSurname] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   const [isSaveEnabled, setIsSaveEnabled] = useState(false); // State to track if the Save button should be enabled
 
   const handleClickSave = () => {
     const data = {
       id: initialData?.id ?? 0,
-      name,
+      firstname,
+      surname,
       email,
-      phone,
     };
     handleSave(data);
   };
@@ -40,20 +40,25 @@ const UserModel: FC<UserModelProps> = ({
   useEffect(() => {
     if (open) {
       if (mode === 'edit' && initialData) {
-        setName(initialData.name);
+        setFirstname(initialData.firstname);
+        setSurname(initialData.surname);
         setEmail(initialData.email);
-        setPhone(initialData.phone);
+      } else if (mode === 'add' && !initialData) {
+        setFirstname('');
+        setSurname('');
+        setEmail('');
+        setIsSaveEnabled(false);
       }
     }
   }, [open, mode, initialData]);
 
   useEffect(() => {
-    if (name || email || phone) {
+    if (firstname || surname || email) {
       setIsSaveEnabled(true);
     } else {
       setIsSaveEnabled(false);
     }
-  }, [name, email, phone]);
+  }, [firstname, surname, email]);
 
   return (
     <Modal
@@ -73,22 +78,22 @@ const UserModel: FC<UserModelProps> = ({
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <CustomTextField
-            label={'User Name'}
-            name={'name'}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            label={'User Firstname'}
+            name={'firstname'}
+            value={firstname}
+            onChange={(e) => setFirstname(e.target.value)}
           />
           <CustomTextField
-            label={'Email'}
+            label={'User Surname'}
+            name={'surname'}
+            value={surname}
+            onChange={(e) => setSurname(e.target.value)}
+          />
+          <CustomTextField
+            label={'User Email'}
             name={'email'}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-          />
-          <CustomTextField
-            label={'Phone'}
-            name={'phone'}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
           />
         </Box>
 

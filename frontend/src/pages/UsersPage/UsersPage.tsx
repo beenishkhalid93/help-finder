@@ -8,10 +8,11 @@ import {
   TableBody,
   IconButton,
   Tooltip,
+  Fab,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
-import { Edit, Delete } from '@mui/icons-material';
+import { Edit, Delete, Add } from '@mui/icons-material';
 import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
 import UserModel from '../../components/UserModel/UserModel';
 import axios from 'axios';
@@ -19,6 +20,14 @@ import axios from 'axios';
 // Define the type for a user
 export interface User {
   id: number;
+  firstname: string;
+  surname: string;
+  email: string;
+}
+
+// Define the type for a user
+export interface newUser {
+  id?: number;
   firstname: string;
   surname: string;
   email: string;
@@ -36,8 +45,42 @@ const fetchUsers = async () => {
   }
 };
 
+// Function to create a new user via POST request
+const createUser = async (userData: newUser) => {
+  // Make a copy of the userData object to avoid mutating the original object
+  const dataToSend = { ...userData };
+
+  // Remove the 'id' field if it exists
+  delete dataToSend.id;
+
+  try {
+    const response = await axios.post(API_URL, dataToSend);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+};
+
+// const initialUsers: User[] = [
+//   { id: 1, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890' },
+//   {
+//     id: 2,
+//     name: 'Jane Smith',
+//     email: 'jane@example.com',
+//     phone: '987-654-3210',
+//   },
+//   {
+//     id: 3,
+//     name: 'Bob Johnson',
+//     email: 'bob@example.com',
+//     phone: '456-123-7890',
+//   },
+// ];
+
 const UsersPage: FC = () => {
   const navigate = useNavigate();
+  const [mode, setMode] = useState<'edit' | 'add'>('add');
   const [users, setUsers] = useState<User[]>([]);
   const [editingUser, setEditingUser] = useState<User | null>(null); // Track the user being edited
   const [open, setOpen] = useState<boolean>(false); // Track if the modal is open
@@ -49,6 +92,8 @@ const UsersPage: FC = () => {
       try {
         const fetchedUsers = await fetchUsers();
         setUsers(fetchedUsers);
+        console.log(users);
+        // console.log(initialUsers);
       } catch (error) {
         console.error('Failed to load users', error);
       }
@@ -56,6 +101,12 @@ const UsersPage: FC = () => {
 
     loadUsers();
   }, []);
+
+  const handleAddUserClick = () => {
+    setMode('add');
+    setEditingUser(null);
+    setOpen(true);
+  };
 
   const handleRowClickUser = (user_id: number) => {
     navigate(`/dashboard/profile/${user_id}`);
@@ -71,23 +122,36 @@ const UsersPage: FC = () => {
     setEditingUser(null);
   };
 
-  const handleSaveClick = (data: {
+  const handleSaveClick = async (data: {
     id: number;
     firstname: string;
     surname: string;
     email: string;
   }) => {
     if (editingUser) {
-      // setUsers((prevCases) =>
-      //   prevCases.map((editingUser) =>
-      //     data.id === editingUser.id ? data : editingUser,
-      //   ),
-      // );
+      setUsers((prevCases) =>
+        prevCases.map((editingUser) =>
+          data.id === editingUser.id ? data : editingUser,
+        ),
+      );
     } else {
-      // const newId = initialUsers.length + 1;
-      // data['id'] = newId;
-      // initialUsers.push(data);
-      setUsers(data);
+      console.log(users);
+      console.log(data);
+      const newId = users.length + 1;
+      data['id'] = newId;
+      users.push(data);
+      console.log(users);
+      console.log(data);
+
+      try {
+        const createdUser = await createUser(data);
+        console.log('User created:', createdUser);
+        // navigate('/dashboard');
+      } catch (error) {
+        console.error('Error creating user:', error);
+      }
+
+      // setUsers(initialUsers);
     }
 
     handleClose();
@@ -161,13 +225,26 @@ const UsersPage: FC = () => {
         </TableDashboard>
       </TableContainer>
 
+      <Fab
+        variant="extended"
+        color="primary"
+        aria-label="add"
+        onClick={handleAddUserClick}
+        sx={{ margin: 2 }}
+      >
+        <Add sx={{ mr: 1 }} />
+        Add User
+      </Fab>
+
       {/* Edit User Modal */}
       <UserModel
         open={open}
         handleClose={handleClose}
-        label={'Edit User'}
+        // label={'Edit User'}
         handleSave={(data) => handleSaveClick(data)}
-        mode={'edit'}
+        label={mode === 'edit' ? 'Edit User' : 'Add User'}
+        mode={mode}
+        // mode={'edit'}
         initialData={editingUser ?? undefined}
       />
 

@@ -9,8 +9,12 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
-
     def create(self, validated_data):
-        # Manually hash the password using make_password
-        validated_data['password'] = make_password(validated_data['password'])
+        if 'password' not in validated_data:
+            validated_data['password'] = make_password('Password@123')  # Default password (avoid in real systems)
+        else:
+            validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
+
+    
+
