@@ -45,55 +45,20 @@ const fetchUsers = async () => {
   }
 };
 
-// Function to create a new user via POST request
-const createUser = async (userData: newUser) => {
-  // Make a copy of the userData object to avoid mutating the original object
-  const dataToSend = { ...userData };
-
-  // Remove the 'id' field if it exists
-  delete dataToSend.id;
-
-  try {
-    const response = await axios.post(API_URL, dataToSend);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating user:', error);
-    throw error;
-  }
-};
-
-// const initialUsers: User[] = [
-//   { id: 1, name: 'John Doe', email: 'john@example.com', phone: '123-456-7890' },
-//   {
-//     id: 2,
-//     name: 'Jane Smith',
-//     email: 'jane@example.com',
-//     phone: '987-654-3210',
-//   },
-//   {
-//     id: 3,
-//     name: 'Bob Johnson',
-//     email: 'bob@example.com',
-//     phone: '456-123-7890',
-//   },
-// ];
-
 const UsersPage: FC = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<'edit' | 'add'>('add');
   const [users, setUsers] = useState<User[]>([]);
-  const [editingUser, setEditingUser] = useState<User | null>(null); // Track the user being edited
-  const [open, setOpen] = useState<boolean>(false); // Track if the modal is open
-  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false); // Track if the delete confirmation dialog is open
-  const [deletingUserId, setDeletingUserId] = useState<number | null>(null); // Track the user being deleted
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [open, setOpen] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
 
   useEffect(() => {
     const loadUsers = async () => {
       try {
         const fetchedUsers = await fetchUsers();
         setUsers(fetchedUsers);
-        console.log(users);
-        // console.log(initialUsers);
       } catch (error) {
         console.error('Failed to load users', error);
       }
@@ -101,6 +66,28 @@ const UsersPage: FC = () => {
 
     loadUsers();
   }, []);
+
+  const createUser = async (userData: newUser) => {
+    const dataToSend = { ...userData };
+    delete dataToSend.id;
+
+    try {
+      const response = await axios.post(API_URL, dataToSend);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
+  };
+
+  const deleteUser = async (userId: number) => {
+    try {
+      await axios.delete(`${API_URL}${userId}/`);
+      setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  };
 
   const handleAddUserClick = () => {
     setMode('add');
@@ -113,11 +100,13 @@ const UsersPage: FC = () => {
   };
 
   const handleEditClick = (user: User) => {
+    setMode('edit');
     setEditingUser(user);
     setOpen(true);
   };
 
   const handleClose = () => {
+    setMode('add');
     setOpen(false);
     setEditingUser(null);
   };
@@ -134,24 +123,24 @@ const UsersPage: FC = () => {
           data.id === editingUser.id ? data : editingUser,
         ),
       );
+
+      try {
+        const response = await axios.put(`${API_URL}${data.id}/`, data);
+        console.log('User updated:', response.data);
+      } catch (error) {
+        console.error('Error updating user:', error);
+      }
     } else {
-      console.log(users);
-      console.log(data);
       const newId = users.length + 1;
       data['id'] = newId;
-      users.push(data);
-      console.log(users);
-      console.log(data);
 
       try {
         const createdUser = await createUser(data);
+        users.push(createdUser);
         console.log('User created:', createdUser);
-        // navigate('/dashboard');
       } catch (error) {
         console.error('Error creating user:', error);
       }
-
-      // setUsers(initialUsers);
     }
 
     handleClose();
@@ -169,9 +158,7 @@ const UsersPage: FC = () => {
 
   const handleConfirmDelete = () => {
     if (deletingUserId !== null) {
-      setUsers((prevUsers) =>
-        prevUsers.filter((user) => user.id !== deletingUserId),
-      );
+      deleteUser(deletingUserId);
     }
     handleDeleteClose();
   };
@@ -194,7 +181,7 @@ const UsersPage: FC = () => {
             {users.map((user) => (
               <TableRow
                 key={user.id}
-                onClick={() => handleRowClickUser(user.id)} // Navigate when the row is clicked
+                onClick={() => handleRowClickUser(user.id)}
                 sx={{ cursor: 'pointer' }}
               >
                 <TableCell>{user.id}</TableCell>
@@ -236,15 +223,13 @@ const UsersPage: FC = () => {
         Add User
       </Fab>
 
-      {/* Edit User Modal */}
+      {/* User Modal */}
       <UserModel
         open={open}
         handleClose={handleClose}
-        // label={'Edit User'}
         handleSave={(data) => handleSaveClick(data)}
         label={mode === 'edit' ? 'Edit User' : 'Add User'}
         mode={mode}
-        // mode={'edit'}
         initialData={editingUser ?? undefined}
       />
 
