@@ -1,9 +1,10 @@
 import { Box, Button, Modal, Typography } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 import { ModelActionContainer, ModelContainer } from './CaseModel.styles';
-import { Save, Cancel } from '@mui/icons-material';
+import { Save, Cancel, AccountCircle } from '@mui/icons-material';
 import CustomTextField from '../CustomTextField/CustomTextField';
 import { Case } from '../../pages/CasesPage/CasesPage';
+import { isValidName, isValidTitle } from '../../utils/validation';
 
 interface CaseModelProps {
   open: boolean;
@@ -28,15 +29,27 @@ const CaseModel: FC<CaseModelProps> = ({
   const [status, setStatus] = useState('');
   const [isSaveEnabled, setIsSaveEnabled] = useState(false); // State to track if the Save button should be enabled
 
-  const handleClickSave = () => {
-    const data = {
-      id: initialData?.id ?? 0,
-      title,
-      name,
-      dateOpened,
-      status,
-    };
-    handleSave(data);
+  const [titleError, setTitleError] = useState(false);
+  const [nameError, setNameError] = useState(false);
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDateOpened(event.target.value);
+  };
+
+  const handleClickSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setTitleError(!isValidTitle(title));
+    setNameError(!isValidName(name));
+    if (isValidTitle(title) && isValidName(name)) {
+      const data = {
+        id: initialData?.id ?? 0,
+        title,
+        name,
+        dateOpened,
+        status,
+      };
+      handleSave(data);
+    }
   };
 
   useEffect(() => {
@@ -82,24 +95,34 @@ const CaseModel: FC<CaseModelProps> = ({
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <CustomTextField
-            label={'Title'}
+            // label={'Title'}
+            placeholder={'Title'}
             name={'title'}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            error={titleError}
+            // startIcon={<AccountCircle />}
+            helperText={titleError ? 'Error: Invalid title' : ''}
           />
           <CustomTextField
-            label={'User Name'}
+            // label={'User Name'}
+            placeholder={'User Name'}
             name={'name'}
             value={name}
             onChange={(e) => setName(e.target.value)}
+            error={nameError}
+            startIcon={<AccountCircle />}
+            helperText={nameError ? 'Error: Invalid name' : ''}
           />
           <CustomTextField
-            label={'Date Opened'}
+            // label={'Date Opened'}
             name={'date_opened'}
+            type="date"
             value={dateOpened}
-            onChange={(e) => setDateOpened(e.target.value)}
+            onChange={handleDateChange}
           />
           <CustomTextField
+            placeholder={'Status'}
             label={'Status'}
             name={'status'}
             value={status}

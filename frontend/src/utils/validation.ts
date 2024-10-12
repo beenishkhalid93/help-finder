@@ -24,3 +24,15 @@ export const isValidPassword = (password: string): boolean => {
     );
   return isValid;
 };
+
+export const isValidTitle = (title: string): boolean => {
+  const isValid = !!title.trim() && /^[\s\S]{3,50}$/.test(title.trim());
+  return isValid;
+};
+
+
+export const isValidName = (name: string): boolean => {
+
+  const isValid = !!name.trim() && /^[a-zA-Z]{3,50}(?:[ '-][a-zA-Z]{3,50})*$/.test(name.trim());
+  return isValid;
+};

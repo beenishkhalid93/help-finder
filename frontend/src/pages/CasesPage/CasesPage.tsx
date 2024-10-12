@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import {
   TableContainer,
   TableHead,
@@ -14,6 +14,7 @@ import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
 import { Edit, Delete, Add } from '@mui/icons-material';
 import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
 import CaseModel from '../../components/CaseModel/CaseModel';
+import axios from 'axios';
 
 export interface Case {
   id: number;
@@ -23,30 +24,70 @@ export interface Case {
   status: string;
 }
 
-const initialCases: Case[] = [
-  {
-    id: 1,
-    title: 'Orphan center',
-    name: 'Ikram ul haq',
-    dateOpened: '24-sep-2024',
-    status: 'Open',
-  },
-  {
-    id: 2,
-    title: 'Blood Donation center',
-    name: 'Beenish Khalid',
-    dateOpened: '15-feb-2024',
-    status: 'In progress',
-  },
-];
+export interface newCase {
+  id?: number;
+  title: string;
+  name: string;
+  dateOpened: string;
+  status: string;
+}
+
+const API_URL = 'http://localhost:8000/api/cases/';
+
+const fetchCases = async () => {
+  try {
+    const response = await axios.get<Case[]>(API_URL);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching cases:', error);
+    throw error;
+  }
+};
 
 const CasesPage: FC = () => {
   const [mode, setMode] = useState<'edit' | 'add'>('add');
-  const [cases, setCases] = useState<Case[]>(initialCases);
+  const [cases, setCases] = useState<Case[]>([]);
   const [editingCase, setEditingCase] = useState<Case | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [deletingCaseId, setDeletingCaseId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const loadCases = async () => {
+      try {
+        const fetchedCases = await fetchCases();
+        setCases(fetchedCases);
+      } catch (error) {
+        console.error('Failed to load cases', error);
+      }
+    };
+
+    loadCases();
+  }, []);
+
+  const createCase = async (caseData: newCase) => {
+    const dataToSend = { ...caseData };
+    delete dataToSend.id;
+
+    try {
+      const response = await axios.post(API_URL, dataToSend);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating case:', error);
+      throw error;
+    }
+  };
+
+  const deleteCase = async (caseId: number) => {
+    try {
+      await axios.delete(`${API_URL}${caseId}/`);
+      setCases((prevCases) =>
+        prevCases.filter((caseData) => caseData.id !== caseId),
+      );
+    } catch (error) {
+      console.error('Error deleting case:', error);
+    }
+  };
 
   const handleEditClick = (caseData: Case) => {
     setMode('edit');
@@ -60,7 +101,7 @@ const CasesPage: FC = () => {
     setEditingCase(null);
   };
 
-  const handleSaveClick = (data: {
+  const handleSaveClick = async (data: {
     id: number;
     name: string;
     title: string;
@@ -73,11 +114,24 @@ const CasesPage: FC = () => {
           data.id === editingCase.id ? data : editingCase,
         ),
       );
+
+      try {
+        const response = await axios.put(`${API_URL}${data.id}/`, data);
+        console.log('Case updated:', response.data);
+      } catch (error) {
+        console.error('Error updating case:', error);
+      }
     } else {
-      const newId = initialCases.length + 1;
+      const newId = cases.length + 1;
       data['id'] = newId;
-      initialCases.push(data);
-      setCases(initialCases);
+
+      try {
+        const createdCase = await createCase(data);
+        cases.push(createdCase);
+        console.log('Case created:', createdCase);
+      } catch (error) {
+        console.error('Error creating case:', error);
+      }
     }
 
     handleClose();
@@ -95,9 +149,7 @@ const CasesPage: FC = () => {
 
   const handleConfirmDelete = () => {
     if (deletingCaseId !== null) {
-      setCases((prevCases) =>
-        prevCases.filter((caseData) => caseData.id !== deletingCaseId),
-      );
+      deleteCase(deletingCaseId);
     }
     handleDeleteClose();
   };

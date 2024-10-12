@@ -89,12 +89,6 @@ const UsersPage: FC = () => {
     }
   };
 
-  const handleAddUserClick = () => {
-    setMode('add');
-    setEditingUser(null);
-    setOpen(true);
-  };
-
   const handleRowClickUser = (user_id: number) => {
     navigate(`/dashboard/profile/${user_id}`);
   };
@@ -161,6 +155,12 @@ const UsersPage: FC = () => {
       deleteUser(deletingUserId);
     }
     handleDeleteClose();
+  };
+
+  const handleAddUserClick = () => {
+    setMode('add');
+    setEditingUser(null);
+    setOpen(true);
   };
 
   return (
