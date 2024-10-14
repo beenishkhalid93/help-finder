@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IconButton } from '@mui/material';
+import { IconButton, Typography } from '@mui/material';
 import AppHeader from '../../components/AppHeader/AppHeader';
 import { LockOpen, Mail, Visibility, VisibilityOff } from '@mui/icons-material';
 import { isValidEmail, isValidPassword } from '../../utils/validation';
@@ -10,6 +10,8 @@ import {
   FullPageWrapper,
   TextFieldContainer,
 } from '../../styles/common.styles';
+import axios from 'axios';
+import { loginUser } from '../../services/authService';
 
 const LoginPage: FC = () => {
   const navigate = useNavigate();
@@ -21,18 +23,31 @@ const LoginPage: FC = () => {
 
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [error, setError] = useState('');
 
   const handleClickShowPassword = () => {
     setShowPassword((prev: unknown) => !prev);
   };
-
-  function handleClickLogin(): void {
+  const handleClickLogin = async (): Promise<void> => {
     setEmailError(!isValidEmail(emailText));
     setPasswordError(!isValidPassword(passwordText));
+
     if (isValidEmail(emailText) && isValidPassword(passwordText)) {
-      navigate('/dashboard');
+      try {
+        await loginUser({
+          userEmail: emailText,
+          userPassword: passwordText,
+        });
+        navigate('/dashboard');
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          setError(error.response?.data?.message || 'Login failed');
+        } else {
+          setError('An unexpected error occurred');
+        }
+      }
     }
-  }
+  };
 
   function handleClickRegister(): void {
     navigate('/register');
@@ -76,6 +91,11 @@ const LoginPage: FC = () => {
         />
       </TextFieldContainer>
 
+      {error && (
+        <Typography variant="h6" color="error" sx={{ marginTop: '8px' }}>
+          {error}
+        </Typography>
+      )}
       <AuthButtonGroup
         showLogin={true}
         showRegister={true}

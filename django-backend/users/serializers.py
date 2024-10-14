@@ -9,6 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True}
         }
+        
     def create(self, validated_data):
         if 'password' not in validated_data:
             validated_data['password'] = make_password('Password@123')  # Default password (avoid in real systems)

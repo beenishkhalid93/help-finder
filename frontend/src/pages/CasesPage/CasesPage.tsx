@@ -14,35 +14,20 @@ import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
 import { Edit, Delete, Add } from '@mui/icons-material';
 import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
 import CaseModel from '../../components/CaseModel/CaseModel';
-import axios from 'axios';
+import {
+  createCase,
+  deleteCase,
+  getCases,
+  updateCase,
+} from '../../services/caseService';
 
 export interface Case {
-  id: number;
-  title: string;
-  name: string;
-  dateOpened: string;
-  status: string;
-}
-
-export interface newCase {
   id?: number;
   title: string;
   name: string;
   dateOpened: string;
   status: string;
 }
-
-const API_URL = 'http://localhost:8000/api/cases/';
-
-const fetchCases = async () => {
-  try {
-    const response = await axios.get<Case[]>(API_URL);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching cases:', error);
-    throw error;
-  }
-};
 
 const CasesPage: FC = () => {
   const [mode, setMode] = useState<'edit' | 'add'>('add');
@@ -55,7 +40,7 @@ const CasesPage: FC = () => {
   useEffect(() => {
     const loadCases = async () => {
       try {
-        const fetchedCases = await fetchCases();
+        const fetchedCases = await getCases();
         setCases(fetchedCases);
       } catch (error) {
         console.error('Failed to load cases', error);
@@ -64,30 +49,6 @@ const CasesPage: FC = () => {
 
     loadCases();
   }, []);
-
-  const createCase = async (caseData: newCase) => {
-    const dataToSend = { ...caseData };
-    delete dataToSend.id;
-
-    try {
-      const response = await axios.post(API_URL, dataToSend);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating case:', error);
-      throw error;
-    }
-  };
-
-  const deleteCase = async (caseId: number) => {
-    try {
-      await axios.delete(`${API_URL}${caseId}/`);
-      setCases((prevCases) =>
-        prevCases.filter((caseData) => caseData.id !== caseId),
-      );
-    } catch (error) {
-      console.error('Error deleting case:', error);
-    }
-  };
 
   const handleEditClick = (caseData: Case) => {
     setMode('edit');
@@ -101,41 +62,30 @@ const CasesPage: FC = () => {
     setEditingCase(null);
   };
 
-  const handleSaveClick = async (data: {
-    id: number;
-    name: string;
-    title: string;
-    dateOpened: string;
-    status: string;
-  }) => {
-    if (editingCase) {
-      setCases((prevCases) =>
-        prevCases.map((editingCase) =>
-          data.id === editingCase.id ? data : editingCase,
-        ),
-      );
+  const saveCase = async (data: Case) => {
+    try {
+      const dataToSend = { ...data };
+      delete dataToSend.id; // Remove id for new case creation
 
-      try {
-        const response = await axios.put(`${API_URL}${data.id}/`, data);
-        console.log('Case updated:', response.data);
-      } catch (error) {
-        console.error('Error updating case:', error);
+      if (editingCase) {
+        await updateCase(data); // Update existing case
+        setCases((prevCases) =>
+          prevCases.map((prevCase) =>
+            prevCase.id === data.id ? data : prevCase,
+          ),
+        );
+      } else {
+        const createdCase = await createCase(dataToSend); // Create new case
+        setCases((prevCases) => [...prevCases, createdCase]);
       }
-    } else {
-      const newId = cases.length + 1;
-      data['id'] = newId;
-
-      try {
-        const createdCase = await createCase(data);
-        cases.push(createdCase);
-        console.log('Case created:', createdCase);
-      } catch (error) {
-        console.error('Error creating case:', error);
-      }
+    } catch (error) {
+      console.error('Error saving case:', error);
     }
 
     handleClose();
   };
+
+  const handleSaveClick = (data: Case) => saveCase(data);
 
   const handleDeleteClick = (caseDataId: number) => {
     setDeletingCaseId(caseDataId);
@@ -147,9 +97,16 @@ const CasesPage: FC = () => {
     setDeletingCaseId(null);
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deletingCaseId !== null) {
-      deleteCase(deletingCaseId);
+      try {
+        await deleteCase(deletingCaseId);
+        setCases((prevCases) =>
+          prevCases.filter((caseData) => caseData.id !== deletingCaseId),
+        );
+      } catch (error) {
+        console.error('Error deleting case:', error);
+      }
     }
     handleDeleteClose();
   };
@@ -196,7 +153,7 @@ const CasesPage: FC = () => {
                   <Tooltip title="Delete">
                     <IconButton
                       color="primary"
-                      onClick={() => handleDeleteClick(caseData.id)}
+                      onClick={() => handleDeleteClick(caseData.id as number)}
                     >
                       <Delete />
                     </IconButton>

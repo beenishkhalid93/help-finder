@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { RowContainer } from './RegisterPage.styles';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
@@ -22,95 +22,75 @@ import {
   FullPageWrapper,
   TextFieldContainer,
 } from '../../styles/common.styles';
-import axios from 'axios';
+import { createUser } from '../../services/userService';
 
 // Define the interface for a new user
-interface NewUser {
+interface User {
   firstname: string;
   surname: string;
   email: string;
   password: string;
 }
 
-// Define the API URL
-const API_URL = 'http://localhost:8000/api/users/';
-
-// Function to create a new user via POST request
-const createUser = async (userData: NewUser) => {
-  try {
-    const response = await axios.post(API_URL, userData);
-    return response.data;
-  } catch (error) {
-    console.error('Error creating user:', error);
-    throw error;
-  }
-};
-
 const RegisterPage: FC = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const [firstnameText, setFirstnameText] = useState('');
-  const [surnameText, setSurnameText] = useState('');
-  const [emailText, setEmailText] = useState('');
-  const [passwordText, setPasswordText] = useState('');
+  const [formData, setFormData] = useState<User>({
+    firstname: '',
+    surname: '',
+    email: '',
+    password: '',
+  });
 
-  const [firstnameError, setFirstnameError] = useState(false);
-  const [surnameError, setSurnameError] = useState(false);
-  const [emailError, setEmailError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
+  const [errors, setErrors] = useState({
+    firstname: false,
+    surname: false,
+    email: false,
+    password: false,
+  });
 
-  const handleClickShowPassword = () => {
-    setShowPassword((prev: unknown) => !prev);
+  // Toggles password visibility
+  const handleClickShowPassword = useCallback(() => {
+    setShowPassword((prev) => !prev);
+  }, []);
+
+  // Consolidate validation logic
+  const validateForm = () => {
+    const newErrors = {
+      firstname: !isValidFirstname(formData.firstname),
+      surname: !isValidSurname(formData.surname),
+      email: !isValidEmail(formData.email),
+      password: !isValidPassword(formData.password),
+    };
+    setErrors(newErrors);
+
+    return !Object.values(newErrors).includes(true); // Returns false if there are any errors
   };
 
+  // Handles text field changes
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // Handles registration submission
   const handleClickRegister = async (
     e: React.MouseEvent<HTMLButtonElement>,
   ) => {
     e.preventDefault();
-    setFirstnameError(!isValidFirstname(firstnameText));
-    setSurnameError(!isValidSurname(surnameText));
-    setEmailError(!isValidEmail(emailText));
-    setPasswordError(!isValidPassword(passwordText));
-    if (
-      isValidFirstname(firstnameText) &&
-      isValidSurname(surnameText) &&
-      isValidEmail(emailText) &&
-      isValidPassword(passwordText)
-    ) {
-      // Create a new user object
-      const newUser: NewUser = {
-        firstname: firstnameText,
-        surname: surnameText,
-        email: emailText,
-        password: passwordText,
-      };
+    if (validateForm()) {
       try {
-        const createdUser = await createUser(newUser);
+        const createdUser = await createUser(formData);
         console.log('User created:', createdUser);
         navigate('/dashboard');
       } catch (error) {
         console.error('Error creating user:', error);
       }
     }
-  };
-
-  const handleFirstnameChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setFirstnameText(event.target.value); // Update state with the input value
-  };
-
-  const handleSurnameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSurnameText(event.target.value); // Update state with the input value
-  };
-
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmailText(event.target.value); // Update state with the input value
-  };
-
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPasswordText(event.target.value); // Update state with the input value
   };
 
   return (
@@ -121,40 +101,44 @@ const RegisterPage: FC = () => {
         <RowContainer>
           <CustomTextField
             placeholder={'Firstname'}
-            value={firstnameText}
-            onChange={handleFirstnameChange}
-            error={firstnameError}
+            name="firstname"
+            value={formData.firstname}
+            onChange={handleInputChange}
+            error={errors.firstname}
             startIcon={<AccountCircle />}
-            helperText={firstnameError ? 'Error: Invalid firstname' : ''}
+            helperText={errors.firstname ? 'Error: Invalid firstname' : ''}
           />
 
           <CustomTextField
             placeholder={'Surname'}
-            value={surnameText}
-            onChange={handleSurnameChange}
-            error={surnameError}
+            name="surname"
+            value={formData.surname}
+            onChange={handleInputChange}
+            error={errors.surname}
             startIcon={<AccountCircle />}
-            helperText={surnameError ? 'Error: Invalid surname' : ''}
+            helperText={errors.surname ? 'Error: Invalid surname' : ''}
           />
         </RowContainer>
 
         <CustomTextField
           placeholder={'Email'}
-          value={emailText}
-          onChange={handleEmailChange}
-          error={emailError}
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          error={errors.email}
           startIcon={<Mail />}
-          helperText={emailError ? 'Error: Invalid email' : ''}
+          helperText={errors.email ? 'Error: Invalid email' : ''}
         />
 
         <CustomTextField
           placeholder={'Password'}
-          value={passwordText}
-          onChange={handlePasswordChange}
-          error={passwordError}
+          name="password"
+          value={formData.password}
+          onChange={handleInputChange}
+          error={errors.password}
           startIcon={<LockOpen />}
           type={showPassword ? 'text' : 'password'}
-          helperText={passwordError ? 'Error: Invalid password' : ''}
+          helperText={errors.password ? 'Error: Invalid password' : ''}
           endIcon={
             <IconButton onClick={handleClickShowPassword} edge="end">
               {showPassword ? <VisibilityOff /> : <Visibility />}

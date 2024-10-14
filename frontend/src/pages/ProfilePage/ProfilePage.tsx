@@ -3,50 +3,38 @@ import { Box, Button, Typography } from '@mui/material';
 import ProfileDataTextField from '../../components/ProfileDataTextField/ProfileDataTextField';
 import { PictureContainer } from './ProfilePage.styles';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import {
   isValidEmail,
   isValidFirstname,
   isValidSurname,
 } from '../../utils/validation';
+import { getUserById, updateUser } from '../../services/userService';
 
 interface UserProfile {
-  id: number;
+  id?: number;
   firstname: string;
   surname: string;
   email: string;
-  profilePicture: string; // URL or base64 string for the profile picture
+  profilePicture?: string; // URL or base64 string for the profile picture
 }
-
-const API_URL = 'http://localhost:8000/api/users/';
-
-const fetchUserById = async (userId: number) => {
-  try {
-    const response = await axios.get<UserProfile>(`${API_URL}${userId}/`); // Fetch user by ID
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching user:', error);
-    throw error;
-  }
-};
 
 const ProfilePage: FC = () => {
   const params = useParams(); // Extract user_id from URL
   const userId = Number.parseInt(params.user ?? '');
   const [profile, setProfile] = useState<UserProfile | null>(null); // Profile state
+  const [isSaveEnabled, setSaveEnabled] = useState(false); // State to track if the Save button should be enabled
+  const [isFieldChange, setFieldChange] = useState(false);
+  const [errors, setErrors] = useState({
+    firstname: false,
+    surname: false,
+    email: false,
+  });
 
-  const [isSaveEnabled, setIsSaveEnabled] = useState(false); // State to track if the Save button should be enabled
-
-  const [firstnameError, setFirstnameError] = useState(false);
-  const [surnameError, setSurnameError] = useState(false);
-  const [emailError, setEmailError] = useState(false);
-
-  console.log('UserId', userId);
-
+  // Fetch user profile by ID
   useEffect(() => {
     const fetchUser = async (userId: number) => {
       try {
-        const user = await fetchUserById(userId);
+        const user = await getUserById(userId);
         setProfile(user); // Set the fetched user profile to the state
       } catch (error) {
         console.error('Error fetching user:', error);
@@ -54,22 +42,23 @@ const ProfilePage: FC = () => {
     };
 
     if (userId) {
-      fetchUser(userId); // Call the function with the extracted user_id
+      fetchUser(userId);
     }
   }, [userId]);
 
+  // Validate profile data when fields change
   useEffect(() => {
-    if (profile) {
-      setFirstnameError(!isValidFirstname(profile.firstname));
-      setSurnameError(!isValidSurname(profile.surname));
-      setEmailError(!isValidEmail(profile.email));
-      if (firstnameError || surnameError || emailError) {
-        setIsSaveEnabled(false);
-      } else {
-        setIsSaveEnabled(true);
-      }
+    if (profile && isFieldChange) {
+      const { firstname, surname, email } = profile;
+      const newErrors = {
+        firstname: !isValidFirstname(firstname),
+        surname: !isValidSurname(surname),
+        email: !isValidEmail(email),
+      };
+      setErrors(newErrors);
+      setSaveEnabled(!Object.values(newErrors).includes(true));
     }
-  }, [profile, firstnameError, surnameError, emailError]);
+  }, [profile, isFieldChange]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -78,6 +67,7 @@ const ProfilePage: FC = () => {
         ...profile,
         [name]: value,
       });
+      setFieldChange(true);
     }
   };
 
@@ -102,17 +92,27 @@ const ProfilePage: FC = () => {
   // Handle form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (isSaveEnabled) {
+    if (isSaveEnabled && profile) {
       try {
-        const response = await axios.put(`${API_URL}${userId}/`, profile);
-        setIsSaveEnabled(false);
-        console.log('User updated:', response.data);
+        const response = await updateUser(profile);
+        console.log('User updated:', response);
+        setSaveEnabled(false);
+        setFieldChange(false);
       } catch (error) {
         console.error('Error updating user:', error);
       }
     }
+  };
 
-    console.log('Profile Data Submitted:', profile);
+  // Render error message if field is invalid
+  const renderError = (error: boolean, field: string) => {
+    return (
+      error && (
+        <Typography color="error" sx={{ marginTop: '8px' }}>
+          {`Error: Invalid ${field}`}
+        </Typography>
+      )
+    );
   };
 
   if (!profile) {
@@ -158,25 +158,24 @@ const ProfilePage: FC = () => {
         name="firstname"
         value={profile.firstname}
         onChange={handleChange}
-        textError={firstnameError}
       />
+      {renderError(errors.firstname, 'Firstname')}
 
       <ProfileDataTextField
         label="Surname"
         name="surname"
         value={profile.surname}
         onChange={handleChange}
-        type="surname"
-        textError={surnameError}
       />
+      {renderError(errors.surname, 'Surname')}
 
       <ProfileDataTextField
         label="Email Address"
         name="email"
         value={profile.email}
         onChange={handleChange}
-        textError={emailError}
       />
+      {renderError(errors.email, 'Email')}
 
       {/* Submit Button */}
       <Button

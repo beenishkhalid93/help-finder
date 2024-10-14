@@ -1,4 +1,12 @@
-import { Box, Button, Modal, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  Typography,
+} from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 import { ModelActionContainer, ModelContainer } from './CaseModel.styles';
 import { Save, Cancel, AccountCircle } from '@mui/icons-material';
@@ -23,18 +31,23 @@ const CaseModel: FC<CaseModelProps> = ({
   handleClose,
   handleSave,
 }) => {
+  const getCurrentDate = (): string => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Add leading zero
+    const day = String(today.getDate()).padStart(2, '0'); // Add leading zero
+    return `${year}-${month}-${day}`; // Format date as YYYY-MM-DD
+  };
+
   const [title, setTitle] = useState('');
   const [name, setName] = useState('');
-  const [dateOpened, setDateOpened] = useState('');
-  const [status, setStatus] = useState('');
+  // const [dateOpened, setDateOpened] = useState('');
+  const [dateOpened, setDateOpened] = useState<string>(getCurrentDate());
+  const [status, setStatus] = useState<string>('Not Started');
   const [isSaveEnabled, setIsSaveEnabled] = useState(false); // State to track if the Save button should be enabled
 
   const [titleError, setTitleError] = useState(false);
   const [nameError, setNameError] = useState(false);
-
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDateOpened(event.target.value);
-  };
 
   const handleClickSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -62,8 +75,8 @@ const CaseModel: FC<CaseModelProps> = ({
       } else if (mode === 'add' && !initialData) {
         setTitle('');
         setName('');
-        setDateOpened('');
-        setStatus('');
+        setDateOpened(getCurrentDate());
+        setStatus('Not Started');
         setIsSaveEnabled(false);
       }
     }
@@ -95,8 +108,8 @@ const CaseModel: FC<CaseModelProps> = ({
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <CustomTextField
-            // label={'Title'}
-            placeholder={'Title'}
+            label={'Title'}
+            // placeholder={'Title'}
             name={'title'}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -105,8 +118,8 @@ const CaseModel: FC<CaseModelProps> = ({
             helperText={titleError ? 'Error: Invalid title' : ''}
           />
           <CustomTextField
-            // label={'User Name'}
-            placeholder={'User Name'}
+            label={'User Name'}
+            // placeholder={'User Name'}
             name={'name'}
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -115,19 +128,24 @@ const CaseModel: FC<CaseModelProps> = ({
             helperText={nameError ? 'Error: Invalid name' : ''}
           />
           <CustomTextField
-            // label={'Date Opened'}
+            label={'Date Opened'}
             name={'date_opened'}
             type="date"
             value={dateOpened}
-            onChange={handleDateChange}
+            onChange={(e) => setDateOpened(e.target.value)}
           />
-          <CustomTextField
-            placeholder={'Status'}
-            label={'Status'}
-            name={'status'}
-            value={status}
+          <InputLabel id="demo-simple-select-label">Status</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={status} // Binds the state to the select value
             onChange={(e) => setStatus(e.target.value)}
-          />
+            // label="Status"
+          >
+            <MenuItem value="Not Started">Not Started</MenuItem>
+            <MenuItem value="In Progress">In Progress</MenuItem>
+            <MenuItem value="Completed">Completed</MenuItem>
+          </Select>
         </Box>
 
         <ModelActionContainer mt={2}>

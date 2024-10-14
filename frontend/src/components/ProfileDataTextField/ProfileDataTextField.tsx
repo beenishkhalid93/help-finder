@@ -17,7 +17,6 @@ const ProfileDataTextField: React.FC<ProfileDataTextFieldProps> = ({
   name,
   value,
   type = 'text',
-  textError,
   onChange,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -38,11 +37,6 @@ const ProfileDataTextField: React.FC<ProfileDataTextFieldProps> = ({
             fullWidth
             autoFocus
           />
-          {textError && (
-            <Typography color="error" sx={{ marginTop: '8px' }}>
-              {`Error: Invalid ${label.toLowerCase()}`}
-            </Typography>
-          )}
         </>
       ) : (
         <Typography
