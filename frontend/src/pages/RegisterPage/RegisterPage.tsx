@@ -22,7 +22,7 @@ import {
   FullPageWrapper,
   TextFieldContainer,
 } from '../../styles/common.styles';
-import { createUser } from '../../services/userService';
+import { signupUser } from '../../services/authService';
 
 // Define the interface for a new user
 interface User {
@@ -84,7 +84,7 @@ const RegisterPage: FC = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const createdUser = await createUser(formData);
+        const createdUser = await signupUser(formData);
         console.log('User created:', createdUser);
         navigate('/dashboard');
       } catch (error) {

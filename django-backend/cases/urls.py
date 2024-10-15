@@ -8,7 +8,6 @@ router.register(r'cases', CaseViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    # path('', views.index, name='index'),  # Add your views here
 ]
 
 urlpatterns = router.urls

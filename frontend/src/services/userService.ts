@@ -1,4 +1,5 @@
 import apiService from "./apiService";
+import { ApiResponse } from "../types/api-response";
 
 // Define the interface for a new user
 export interface User {
@@ -11,7 +12,7 @@ export interface User {
 
 export const getUsers = async () => {
     try {
-      const response = await apiService.get<User[]>(`/users/`);
+      const response = await apiService.get<ApiResponse<User[]>>(`/users/`);
       return response.data;
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -21,7 +22,7 @@ export const getUsers = async () => {
 
 export const getUserById = async (userId: number) => {
     try {
-      const response = await apiService.get<User>(`/users/${userId}/`);
+      const response = await apiService.get<ApiResponse<User>>(`/users/${userId}/`);
       return response.data;
     } catch (error) {
       console.error('Error fetching user:', error);
@@ -30,9 +31,9 @@ export const getUserById = async (userId: number) => {
   };
   
   // Function to create a new user via POST request
-  export const createUser = async (data: User) => {
+export const createUser = async (data: User) => {
     try {
-      const response = await apiService.post<User>('/users/', data);
+      const response = await apiService.post<ApiResponse<User>>('/users/', data);
       return response.data;
     } catch (error) {
       console.error('Error creating user:', error);
@@ -40,21 +41,24 @@ export const getUserById = async (userId: number) => {
     }
   };
 
-  export const updateUser = async (data: User) => {
+export const updateUser = async (data: User) => {
     try {
-        const response = await apiService.put<User>(`/users/${data?.id}/`, data);
+        const response = await apiService.put<ApiResponse<User>>(`/users/${data?.id}/`, data);
         console.log('User updated:', response.data);
         return response.data;
       } catch (error) {
         console.error('Error updating user:', error);
+        throw error;
       }
 
   };
 
-  export const deleteUser = async (userId: number) => {
-    try {
-      await apiService.delete(`/users/${userId}/`);
-    } catch (error) {
-      console.error('Error deleting user:', error);
-    }
+export const deleteUser = async (userId: number) => {
+      try {
+        const response = await apiService.delete<ApiResponse<void>>(`/users/${userId}/`);
+        return response.data;
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        throw error;
+      }
   };

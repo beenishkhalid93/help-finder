@@ -43,8 +43,9 @@ const UsersPage: FC = () => {
   useEffect(() => {
     const loadUsers = async () => {
       try {
-        const fetchedUsers = await getUsers();
-        setUsers(fetchedUsers);
+        const response = await getUsers();
+        const fetchedUsers = response.data;
+        setUsers(fetchedUsers!);
       } catch (error) {
         console.error('Failed to load users', error);
       }
@@ -93,8 +94,9 @@ const UsersPage: FC = () => {
         );
       } else {
         // Add a new user
-        const newUser = await createUser(data);
-        setUsers((prevUsers) => [...prevUsers, newUser]);
+        const response = await createUser(data);
+        const newUser = response.data;
+        setUsers((prevUsers) => [...prevUsers, newUser!]);
       }
       handleClose();
     } catch (error) {
