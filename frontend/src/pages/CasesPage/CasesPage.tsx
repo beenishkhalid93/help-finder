@@ -40,8 +40,7 @@ const CasesPage: FC = () => {
   useEffect(() => {
     const loadCases = async () => {
       try {
-        const response = await getCases();
-        const fetchedCases = response.data;
+        const fetchedCases = await getCases();
         setCases(fetchedCases!);
       } catch (error) {
         console.error('Failed to load cases', error);
@@ -76,8 +75,7 @@ const CasesPage: FC = () => {
           ),
         );
       } else {
-        const response = await createCase(dataToSend); // Create new case
-        const createdCase = response.data;
+        const createdCase = await createCase(dataToSend); // Create new case
         setCases((prevCases) => [...prevCases, createdCase!]);
       }
     } catch (error) {

@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 // Create an Axios instance with default configuration
 const apiClient: AxiosInstance = axios.create({
@@ -25,24 +25,25 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error) => {
     // You can handle errors globally here (like redirecting to login on 401, etc.)
+    const errorMessage = error.response.data?.error || error.response.data?.message || 'Server error occurred';
     console.error('API Error:', error);
-    return Promise.reject(error);
+    return Promise.reject(new Error(errorMessage));
   }
 );
 
-// Create reusable methods for your API calls
-const apiService = {
-  get: <T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
-    apiClient.get(url, config),
+// // Create reusable methods for your API calls
+// const apiClient = {
+//   get: <T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
+//     apiClient.get(url, config),
 
-  post: <T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
-    apiClient.post(url, data, config),
+//   post: <T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
+//     apiClient.post(url, data, config),
 
-  put: <T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
-    apiClient.put(url, data, config),
+//   put: <T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
+//     apiClient.put(url, data, config),
 
-  delete: <T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
-    apiClient.delete(url, config),
-};
+//   delete: <T>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> =>
+//     apiClient.delete(url, config),
+// };
 
-export default apiService;
+export default apiClient;

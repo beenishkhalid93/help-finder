@@ -15,6 +15,7 @@ interface UserModelProps {
   label: string;
   mode: string;
   initialData: User | undefined;
+  apiError: string;
   handleClose: () => void;
   handleSave: (data: User) => void;
 }
@@ -24,6 +25,7 @@ const UserModel: FC<UserModelProps> = ({
   label,
   mode,
   initialData,
+  apiError,
   handleClose,
   handleSave,
 }) => {
@@ -55,6 +57,12 @@ const UserModel: FC<UserModelProps> = ({
       handleSave(data);
     }
   };
+
+  useEffect(() => {
+    if (apiError) {
+      console.log('API server: ', apiError);
+    }
+  }, [apiError]);
 
   useEffect(() => {
     if (open) {
@@ -94,6 +102,12 @@ const UserModel: FC<UserModelProps> = ({
         >
           {label}
         </Typography>
+
+        {apiError && (
+          <Typography color="error" sx={{ marginTop: '8px' }}>
+            {apiError}
+          </Typography>
+        )}
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <CustomTextField
@@ -137,6 +151,7 @@ const UserModel: FC<UserModelProps> = ({
           >
             Save
           </Button>
+
           <Button onClick={handleClose} color="primary" startIcon={<Cancel />}>
             Cancel
           </Button>

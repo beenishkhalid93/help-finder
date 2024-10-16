@@ -71,7 +71,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return APIResponse(
                 status='failure',
                 message='Email already exists',
-                error={'email': 'A user with this email already exists'},
+                error={'This email is already in use.'}, 
                 code=status.HTTP_400_BAD_REQUEST
             )
         
@@ -131,10 +131,12 @@ class UserViewSet(viewsets.ModelViewSet):
                     data=serializer.data,
                     code=status.HTTP_200_OK
                 )
+
+            error_response = serializer.errors
             return APIResponse(
                 status='failure',
                 message='Update failed',
-                error=serializer.errors,
+                error=error_response['email'][0], 
                 code=status.HTTP_400_BAD_REQUEST
             )
 

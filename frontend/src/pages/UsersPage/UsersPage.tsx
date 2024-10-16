@@ -38,14 +38,26 @@ const UsersPage: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
+  const [apiError, setApiError] = useState<string>('');
+
+  useEffect(() => {
+    if (!open) {
+      setApiError(''); // Clear the API error when modal is closed
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (apiError) {
+      console.log('API server: ', apiError);
+    }
+  }, [apiError]);
 
   // Fetch users when the component mounts
   useEffect(() => {
     const loadUsers = async () => {
       try {
-        const response = await getUsers();
-        const fetchedUsers = response.data;
-        setUsers(fetchedUsers!);
+        const fetchedUser = await getUsers();
+        setUsers(fetchedUser!);
       } catch (error) {
         console.error('Failed to load users', error);
       }
@@ -94,13 +106,18 @@ const UsersPage: FC = () => {
         );
       } else {
         // Add a new user
-        const response = await createUser(data);
-        const newUser = response.data;
+        const newUser = await createUser(data);
         setUsers((prevUsers) => [...prevUsers, newUser!]);
       }
       handleClose();
-    } catch (error) {
-      console.error('Error saving user:', error);
+    } catch (error: unknown) {
+      console.error(error);
+      let errorMessage = String(error);
+      console.log = 
+      if (errorMessage.startsWith('Error: ')) {
+        errorMessage = errorMessage.replace('Error: ', '');
+      }
+      setApiError(errorMessage);
     }
   };
 
@@ -198,6 +215,7 @@ const UsersPage: FC = () => {
         label={mode === 'edit' ? 'Edit User' : 'Add User'}
         mode={mode}
         initialData={editingUser ?? undefined}
+        apiError={apiError}
       />
 
       {/* Delete Confirmation Dialog */}

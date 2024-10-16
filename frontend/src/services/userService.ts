@@ -1,64 +1,25 @@
-import apiService from "./apiService";
-import { ApiResponse } from "../types/api-response";
 
-// Define the interface for a new user
-export interface User {
-    id?: number;
-    firstname: string;
-    surname: string;
-    email: string;
-    password?: string;
-  }
+import { User } from "../pages/UsersPage/UsersPage";
+import { ApiResponse } from "../types/api-response";
+import { handleApiCall } from "../utils/handleApiCall";
+import apiClient from "./apiClient";
 
 export const getUsers = async () => {
-    try {
-      const response = await apiService.get<ApiResponse<User[]>>(`/users/`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      throw error;
-    }
-  };
+  return (handleApiCall(apiClient.get<ApiResponse<User[]>>(`/users/`)));
+};
 
 export const getUserById = async (userId: number) => {
-    try {
-      const response = await apiService.get<ApiResponse<User>>(`/users/${userId}/`);
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching user:', error);
-      throw error;
-    }
-  };
-  
-  // Function to create a new user via POST request
+  return (handleApiCall(apiClient.get<ApiResponse<User>>(`/users/${userId}/`)));
+};
+
 export const createUser = async (data: User) => {
-    try {
-      const response = await apiService.post<ApiResponse<User>>('/users/', data);
-      return response.data;
-    } catch (error) {
-      console.error('Error creating user:', error);
-      throw error;
-    }
-  };
+  return (handleApiCall(apiClient.post<ApiResponse<User>>('/users/', data)));
+};
 
 export const updateUser = async (data: User) => {
-    try {
-        const response = await apiService.put<ApiResponse<User>>(`/users/${data?.id}/`, data);
-        console.log('User updated:', response.data);
-        return response.data;
-      } catch (error) {
-        console.error('Error updating user:', error);
-        throw error;
-      }
-
-  };
+  return (handleApiCall(apiClient.put<ApiResponse<User>>(`/users/${data.id}/`, data)));
+};
 
 export const deleteUser = async (userId: number) => {
-      try {
-        const response = await apiService.delete<ApiResponse<void>>(`/users/${userId}/`);
-        return response.data;
-      } catch (error) {
-        console.error('Error deleting user:', error);
-        throw error;
-      }
-  };
+  return (handleApiCall(apiClient.delete<ApiResponse<void>>(`/users/${userId}/`)));
+};

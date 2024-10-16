@@ -1,7 +1,7 @@
 import { FC, useCallback, useState } from 'react';
 import { RowContainer } from './RegisterPage.styles';
 import { useNavigate } from 'react-router-dom';
-import { IconButton } from '@mui/material';
+import { IconButton, Typography } from '@mui/material';
 import {
   AccountCircle,
   Mail,
@@ -50,6 +50,7 @@ const RegisterPage: FC = () => {
     password: false,
   });
 
+  const [apiError, setApiError] = useState<string>('');
   // Toggles password visibility
   const handleClickShowPassword = useCallback(() => {
     setShowPassword((prev) => !prev);
@@ -87,8 +88,13 @@ const RegisterPage: FC = () => {
         const createdUser = await signupUser(formData);
         console.log('User created:', createdUser);
         navigate('/dashboard');
-      } catch (error) {
-        console.error('Error creating user:', error);
+      } catch (error: unknown) {
+        console.error(error);
+        let errorMessage = String(error);
+        if (errorMessage.startsWith('Error: ')) {
+          errorMessage = errorMessage.replace('Error: ', '');
+        }
+        setApiError(errorMessage);
       }
     }
   };
@@ -151,6 +157,11 @@ const RegisterPage: FC = () => {
         showRegister={true}
         clickRegister={handleClickRegister}
       />
+      {apiError && (
+        <Typography variant="body1" color="error">
+          {apiError}
+        </Typography>
+      )}
     </FullPageWrapper>
   );
 };

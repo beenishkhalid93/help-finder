@@ -15,7 +15,7 @@ def signup_user(request):
             return APIResponse(
                 status='failure', 
                 message='Email is already taken', 
-                error={'email': 'This email is already in use.'}, 
+                error={'This email is already in use.'}, 
                 code=status.HTTP_400_BAD_REQUEST
             )
         
@@ -29,11 +29,12 @@ def signup_user(request):
             data={'email': user.email, 'firstname': user.firstname}, 
             code=status.HTTP_201_CREATED
         )
-
+        
+    error_response = serializer.errors
     return APIResponse(
         status='failure', 
         message='Signup failed', 
-        error=serializer.errors, 
+        error=error_response['email'][0], 
         code=status.HTTP_400_BAD_REQUEST
     )
 

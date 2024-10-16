@@ -35,7 +35,7 @@ const ProfilePage: FC = () => {
     const fetchUser = async (userId: number) => {
       try {
         const user = await getUserById(userId);
-        setProfile(user); // Set the fetched user profile to the state
+        setProfile(user!); // Set the fetched user profile to the state
       } catch (error) {
         console.error('Error fetching user:', error);
       }

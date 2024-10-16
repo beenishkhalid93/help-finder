@@ -1,12 +1,12 @@
 export const isValidFirstname = (firstname: string): boolean => {
-  const isValid = !!firstname.trim() && /^[a-zA-Z]{3,50}(?:[ '-][a-zA-Z]{3,50})*$/.test(firstname.trim());
+  const isValid = !!firstname.trim() && /^[a-zA-Z]{3,50}(?:[ '.-][a-zA-Z]{1,50})*(?: [A-Z]\.)?(?:[ '.-][a-zA-Z]{1,50})*$/.test(firstname.trim());
   return isValid;
 };
 
 
 export const isValidSurname = (surname: string): boolean => {
 
-  const isValid = !!surname.trim() && /^[a-zA-Z]{3,50}(?:[ '-][a-zA-Z]{3,50})*$/.test(surname.trim());
+  const isValid = !!surname.trim() && /^[a-zA-Z]{3,50}(?:[ '.-][a-zA-Z]{1,50})*(?: [A-Z]\.)?(?:[ '.-][a-zA-Z]{1,50})*$/.test(surname.trim());
   return isValid;
 };
 
@@ -33,6 +33,6 @@ export const isValidTitle = (title: string): boolean => {
 
 export const isValidName = (name: string): boolean => {
 
-  const isValid = !!name.trim() && /^[a-zA-Z]{3,50}(?:[ '-][a-zA-Z]{3,50})*$/.test(name.trim());
+  const isValid = !!name.trim() && /^[a-zA-Z]{3,50}(?:[ '.-][a-zA-Z]{1,50})*(?: [A-Z]\.)?(?:[ '.-][a-zA-Z]{1,50})*$/.test(name.trim());
   return isValid;
 };
