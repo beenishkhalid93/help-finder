@@ -10,8 +10,8 @@ import {
   FullPageWrapper,
   TextFieldContainer,
 } from '../../styles/common.styles';
-import axios from 'axios';
 import { loginUser } from '../../services/authService';
+import { handleApiError } from '../../utils/handleApiError';
 
 const LoginPage: FC = () => {
   const navigate = useNavigate();
@@ -39,12 +39,9 @@ const LoginPage: FC = () => {
           userPassword: passwordText,
         });
         navigate('/dashboard');
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          setError(error.response?.data?.message || 'Login failed');
-        } else {
-          setError('An unexpected error occurred');
-        }
+      } catch (error: unknown) {
+        const errorMessage = handleApiError(error);
+        setError(errorMessage);
       }
     }
   };

@@ -23,6 +23,7 @@ import {
   TextFieldContainer,
 } from '../../styles/common.styles';
 import { signupUser } from '../../services/authService';
+import { handleApiError } from '../../utils/handleApiError';
 
 // Define the interface for a new user
 interface User {
@@ -90,10 +91,7 @@ const RegisterPage: FC = () => {
         navigate('/dashboard');
       } catch (error: unknown) {
         console.error(error);
-        let errorMessage = String(error);
-        if (errorMessage.startsWith('Error: ')) {
-          errorMessage = errorMessage.replace('Error: ', '');
-        }
+        const errorMessage = handleApiError(error);
         setApiError(errorMessage);
       }
     }

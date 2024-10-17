@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 
-def APIResponse(status: str, message: str, data=None, error=None, code=200):
+def APIResponse(status: bool, message: str, data=None, error=None, code=200):
     """
     Utility function to format API responses.
     

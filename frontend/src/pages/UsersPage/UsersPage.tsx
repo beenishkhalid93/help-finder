@@ -9,6 +9,7 @@ import {
   IconButton,
   Tooltip,
   Fab,
+  Typography,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
@@ -21,6 +22,7 @@ import {
   deleteUser,
   updateUser,
 } from '../../services/userService';
+import { handleApiError } from '../../utils/handleApiError';
 
 export interface User {
   id?: number;
@@ -39,6 +41,7 @@ const UsersPage: FC = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
   const [apiError, setApiError] = useState<string>('');
+  const [isUserFound, setUserFound] = useState<string>('');
 
   useEffect(() => {
     if (!open) {
@@ -48,7 +51,7 @@ const UsersPage: FC = () => {
 
   useEffect(() => {
     if (apiError) {
-      console.log('API server: ', apiError);
+      console.log('API server error: ', apiError);
     }
   }, [apiError]);
 
@@ -58,8 +61,10 @@ const UsersPage: FC = () => {
       try {
         const fetchedUser = await getUsers();
         setUsers(fetchedUser!);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Failed to load users', error);
+        const errorMessage = handleApiError(error);
+        setUserFound(errorMessage);
       }
     };
     loadUsers();
@@ -112,11 +117,7 @@ const UsersPage: FC = () => {
       handleClose();
     } catch (error: unknown) {
       console.error(error);
-      let errorMessage = String(error);
-      console.log = 
-      if (errorMessage.startsWith('Error: ')) {
-        errorMessage = errorMessage.replace('Error: ', '');
-      }
+      const errorMessage = handleApiError(error);
       setApiError(errorMessage);
     }
   };
@@ -136,6 +137,8 @@ const UsersPage: FC = () => {
         );
       } catch (error) {
         console.error('Error deleting user:', error);
+        const errorMessage = handleApiError(error);
+        console.log(errorMessage);
       }
     }
     setOpenDeleteDialog(false);
@@ -224,6 +227,8 @@ const UsersPage: FC = () => {
         handleDeleteClose={handleDeleteClose}
         handleConfirmDelete={handleConfirmDelete}
       />
+
+      {isUserFound && <Typography variant="h6">User not found</Typography>}
     </FullPageWrapper>
   );
 };

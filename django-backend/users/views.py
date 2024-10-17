@@ -23,7 +23,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
             # Return a successful API response with all users data
             return APIResponse(
-                status='success',
+                status=True,
                 message='Users retrieved successfully',
                 data=serializer.data,
                 code=status.HTTP_200_OK
@@ -32,7 +32,7 @@ class UserViewSet(viewsets.ModelViewSet):
         except Exception as e:
             # Handle any unexpected errors
             return APIResponse(
-                status='failure',
+                status=False,
                 message='Failed to retrieve users',
                 error=str(e),
                 code=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -47,7 +47,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
             # Return a successful API response with user data
             return APIResponse(
-                status='success',
+                status=True,
                 message='User retrieved successfully',
                 data=serializer.data,
                 code=status.HTTP_200_OK
@@ -56,9 +56,9 @@ class UserViewSet(viewsets.ModelViewSet):
         except User.DoesNotExist:
             # Return an error response if the user does not exist
             return APIResponse(
-                status='failure',
+                status=False,
                 message='User not found',
-                error={'user': 'No user found with this ID'},
+                error='No user found with this ID',
                 code=status.HTTP_404_NOT_FOUND
             )
 
@@ -69,9 +69,9 @@ class UserViewSet(viewsets.ModelViewSet):
         # Check if email is unique
         if User.objects.filter(email=request.data.get('email')).exists():
             return APIResponse(
-                status='failure',
+                status=False,
                 message='Email already exists',
-                error={'This email is already in use.'}, 
+                error='This email is already in use.', 
                 code=status.HTTP_400_BAD_REQUEST
             )
         
@@ -81,7 +81,7 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.validated_data['password'] = make_password(serializer.validated_data.get('password'))
             serializer.save()
             return APIResponse(
-                status='success',
+                status=True,
                 message='User created successfully',
                 data=serializer.data,
                 code=status.HTTP_201_CREATED
@@ -89,7 +89,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         # If serializer is not valid, return error response
         return APIResponse(
-            status='failure',
+            status=False,
             message='User creation failed',
             error=serializer.errors,
             code=status.HTTP_400_BAD_REQUEST
@@ -101,16 +101,16 @@ class UserViewSet(viewsets.ModelViewSet):
             user = User.objects.get(pk=pk)
             user.delete()
             return APIResponse(
-                status='success',
+                status=True,
                 message='User deleted successfully',
                 data=None,
                 code=status.HTTP_200_OK
             )
         except User.DoesNotExist:
             return APIResponse(
-                status='failure',
+                status=False,
                 message='User not found',
-                error={'user': 'No user found with this ID'},
+                error='No user found with this ID',
                 code=status.HTTP_404_NOT_FOUND
             )
 
@@ -126,7 +126,7 @@ class UserViewSet(viewsets.ModelViewSet):
             if serializer.is_valid():
                 serializer.save()
                 return APIResponse(
-                    status='success',
+                    status=True,
                     message='User updated successfully',
                     data=serializer.data,
                     code=status.HTTP_200_OK
@@ -134,16 +134,16 @@ class UserViewSet(viewsets.ModelViewSet):
 
             error_response = serializer.errors
             return APIResponse(
-                status='failure',
+                status=False,
                 message='Update failed',
-                error=error_response['email'][0], 
+                error='This email is already in use.', 
                 code=status.HTTP_400_BAD_REQUEST
             )
 
         except User.DoesNotExist:
             return APIResponse(
-                status='failure',
+                status=False,
                 message='User not found',
-                error={'user': 'No user found with this ID'},
+                error='No user found with this ID',
                 code=status.HTTP_404_NOT_FOUND
             )

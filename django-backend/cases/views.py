@@ -19,7 +19,7 @@ class CaseViewSet(viewsets.ModelViewSet):
 
             # Return a successful API response with all cases data
             return APIResponse(
-                status='success',
+                status=True,
                 message='Cases retrieved successfully',
                 data=serializer.data,
                 code=status.HTTP_200_OK
@@ -28,7 +28,7 @@ class CaseViewSet(viewsets.ModelViewSet):
         except Exception as e:
             # Handle any unexpected errors
             return APIResponse(
-                status='failure',
+                status=False,
                 message='Failed to retrieve cases',
                 error=str(e),
                 code=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -44,7 +44,7 @@ class CaseViewSet(viewsets.ModelViewSet):
 
             # Return a successful API response with the case data
             return APIResponse(
-                status='success',
+                status=True,
                 message='Case retrieved successfully',
                 data=serializer.data,
                 code=status.HTTP_200_OK
@@ -53,16 +53,16 @@ class CaseViewSet(viewsets.ModelViewSet):
         except Case.DoesNotExist:
             # Handle case where the case with the specified ID does not exist
             return APIResponse(
-                status='failure',
+                status=False,
                 message='Case not found',
-                error={'case': 'No case found with this ID'},
+                error='No case found with this ID',
                 code=status.HTTP_404_NOT_FOUND
             )
 
         except Exception as e:
             # Handle any unexpected errors
             return APIResponse(
-                status='failure',
+                status=False,
                 message='Failed to retrieve case',
                 error=str(e),
                 code=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -74,13 +74,13 @@ class CaseViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             return APIResponse(
-                status='success',
+                status=True,
                 message='Case created successfully',
                 data=serializer.data,
                 code=status.HTTP_201_CREATED
             )
         return APIResponse(
-            status='failure',
+            status=False,
             message='Case creation failed',
             error=serializer.errors,
             code=status.HTTP_400_BAD_REQUEST
@@ -94,13 +94,13 @@ class CaseViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             return APIResponse(
-                status='success',
+                status=True,
                 message='Case updated successfully',
                 data=serializer.data,
                 code=status.HTTP_200_OK
             )
         return APIResponse(
-            status='failure',
+            status=False,
             message='Case update failed',
             error=serializer.errors,
             code=status.HTTP_400_BAD_REQUEST
@@ -112,15 +112,15 @@ class CaseViewSet(viewsets.ModelViewSet):
             instance = self.get_object()
             self.perform_destroy(instance)
             return APIResponse(
-                status='success',
+                status=True,
                 message='Case deleted successfully',
                 data=None,
                 code=status.HTTP_200_OK  # Return 200 instead of 204 to include a response
             )
         except Case.DoesNotExist:
             return APIResponse(
-                status='failure',
+                status=False,
                 message='Case not found',
-                error={'case': 'No case found with this ID'},
+                error='No case found with this ID',
                 code=status.HTTP_404_NOT_FOUND
             )

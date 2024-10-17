@@ -19,6 +19,7 @@ interface CaseModelProps {
   label: string;
   mode: string;
   initialData: Case | undefined;
+  apiError?: string;
   handleClose: () => void;
   handleSave: (data: Case) => void;
 }
@@ -28,6 +29,7 @@ const CaseModel: FC<CaseModelProps> = ({
   label,
   mode,
   initialData,
+  apiError,
   handleClose,
   handleSave,
 }) => {
@@ -64,6 +66,12 @@ const CaseModel: FC<CaseModelProps> = ({
       handleSave(data);
     }
   };
+
+  useEffect(() => {
+    if (apiError) {
+      console.log('API server error: ', apiError);
+    }
+  }, [apiError]);
 
   useEffect(() => {
     if (open) {
@@ -105,6 +113,12 @@ const CaseModel: FC<CaseModelProps> = ({
         >
           {label}
         </Typography>
+
+        {apiError && (
+          <Typography color="error" sx={{ marginTop: '8px' }}>
+            {apiError}
+          </Typography>
+        )}
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <CustomTextField

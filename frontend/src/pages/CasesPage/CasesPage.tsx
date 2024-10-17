@@ -20,6 +20,7 @@ import {
   getCases,
   updateCase,
 } from '../../services/caseService';
+import { handleApiError } from '../../utils/handleApiError';
 
 export interface Case {
   id?: number;
@@ -36,6 +37,19 @@ const CasesPage: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [deletingCaseId, setDeletingCaseId] = useState<number | null>(null);
+  const [apiError, setApiError] = useState<string>('');
+
+  useEffect(() => {
+    if (!open) {
+      setApiError(''); // Clear the API error when modal is closed
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (apiError) {
+      console.log('API server error: ', apiError);
+    }
+  }, [apiError]);
 
   useEffect(() => {
     const loadCases = async () => {
@@ -44,6 +58,8 @@ const CasesPage: FC = () => {
         setCases(fetchedCases!);
       } catch (error) {
         console.error('Failed to load cases', error);
+        const errorMessage = handleApiError(error);
+        console.log(errorMessage);
       }
     };
 
@@ -80,6 +96,8 @@ const CasesPage: FC = () => {
       }
     } catch (error) {
       console.error('Error saving case:', error);
+      const errorMessage = handleApiError(error);
+      setApiError(errorMessage);
     }
 
     handleClose();
@@ -183,6 +201,7 @@ const CasesPage: FC = () => {
         label={mode === 'edit' ? 'Edit Case' : 'Add Case'}
         mode={mode}
         initialData={editingCase ?? undefined}
+        apiError={apiError}
       />
       {/* Delete Confirmation Dialog */}
       <ConfirmationDialog

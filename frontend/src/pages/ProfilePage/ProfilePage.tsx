@@ -9,6 +9,7 @@ import {
   isValidSurname,
 } from '../../utils/validation';
 import { getUserById, updateUser } from '../../services/userService';
+import { handleApiError } from '../../utils/handleApiError';
 
 interface UserProfile {
   id?: number;
@@ -29,6 +30,7 @@ const ProfilePage: FC = () => {
     surname: false,
     email: false,
   });
+  const [apiError, setApiError] = useState<string>('');
 
   // Fetch user profile by ID
   useEffect(() => {
@@ -57,6 +59,7 @@ const ProfilePage: FC = () => {
       };
       setErrors(newErrors);
       setSaveEnabled(!Object.values(newErrors).includes(true));
+      setApiError('');
     }
   }, [profile, isFieldChange]);
 
@@ -100,6 +103,8 @@ const ProfilePage: FC = () => {
         setFieldChange(false);
       } catch (error) {
         console.error('Error updating user:', error);
+        const errorMessage = handleApiError(error);
+        setApiError(errorMessage);
       }
     }
   };
@@ -187,6 +192,12 @@ const ProfilePage: FC = () => {
       >
         Submit
       </Button>
+
+      {apiError && (
+        <Typography variant="body1" color="error">
+          {apiError}
+        </Typography>
+      )}
     </Box>
   );
 };
