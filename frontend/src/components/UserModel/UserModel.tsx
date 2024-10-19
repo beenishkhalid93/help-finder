@@ -15,7 +15,7 @@ interface UserModelProps {
   label: string;
   mode: string;
   initialData: User | undefined;
-  apiError: string;
+  apiError?: string | null;
   handleClose: () => void;
   handleSave: (data: User) => void;
 }
@@ -60,7 +60,7 @@ const UserModel: FC<UserModelProps> = ({
 
   useEffect(() => {
     if (apiError) {
-      console.log('API server: ', apiError);
+      console.log('API server in model: ', apiError);
     }
   }, [apiError]);
 

@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState, useCallback } from 'react';
 import {
   TableContainer,
   TableHead,
@@ -9,18 +9,13 @@ import {
   Tooltip,
   IconButton,
   Fab,
+  Typography,
 } from '@mui/material';
 import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
 import { Edit, Delete, Add } from '@mui/icons-material';
 import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
 import CaseModel from '../../components/CaseModel/CaseModel';
-import {
-  createCase,
-  deleteCase,
-  getCases,
-  updateCase,
-} from '../../services/caseService';
-import { handleApiError } from '../../utils/handleApiError';
+import { useCase } from '../../hooks/useCase';
 
 export interface Case {
   id?: number;
@@ -31,113 +26,72 @@ export interface Case {
 }
 
 const CasesPage: FC = () => {
+  const { cases, loading, error, fetchCases, addCase, editCase, removeCase } =
+    useCase();
+
   const [mode, setMode] = useState<'edit' | 'add'>('add');
-  const [cases, setCases] = useState<Case[]>([]);
   const [editingCase, setEditingCase] = useState<Case | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [deletingCaseId, setDeletingCaseId] = useState<number | null>(null);
-  const [apiError, setApiError] = useState<string>('');
 
   useEffect(() => {
-    if (!open) {
-      setApiError(''); // Clear the API error when modal is closed
-    }
-  }, [open]);
+    fetchCases();
+  }, [fetchCases]);
 
-  useEffect(() => {
-    if (apiError) {
-      console.log('API server error: ', apiError);
-    }
-  }, [apiError]);
-
-  useEffect(() => {
-    const loadCases = async () => {
-      try {
-        const fetchedCases = await getCases();
-        setCases(fetchedCases!);
-      } catch (error) {
-        console.error('Failed to load cases', error);
-        const errorMessage = handleApiError(error);
-        console.log(errorMessage);
-      }
-    };
-
-    loadCases();
-  }, []);
-
-  const handleEditClick = (caseData: Case) => {
+  const handleEditClick = useCallback((caseData: Case) => {
     setMode('edit');
     setEditingCase(caseData);
     setOpen(true);
-  };
+  }, []);
 
-  const handleClose = () => {
-    setMode('add');
-    setOpen(false);
-    setEditingCase(null);
-  };
-
-  const saveCase = async (data: Case) => {
-    try {
-      const dataToSend = { ...data };
-      delete dataToSend.id; // Remove id for new case creation
-
-      if (editingCase) {
-        await updateCase(data); // Update existing case
-        setCases((prevCases) =>
-          prevCases.map((prevCase) =>
-            prevCase.id === data.id ? data : prevCase,
-          ),
-        );
-      } else {
-        const createdCase = await createCase(dataToSend); // Create new case
-        setCases((prevCases) => [...prevCases, createdCase!]);
-      }
-    } catch (error) {
-      console.error('Error saving case:', error);
-      const errorMessage = handleApiError(error);
-      setApiError(errorMessage);
-    }
-
-    handleClose();
-  };
-
-  const handleSaveClick = (data: Case) => saveCase(data);
-
-  const handleDeleteClick = (caseDataId: number) => {
-    setDeletingCaseId(caseDataId);
-    setOpenDeleteDialog(true);
-  };
-
-  const handleDeleteClose = () => {
-    setOpenDeleteDialog(false);
-    setDeletingCaseId(null);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (deletingCaseId !== null) {
-      try {
-        await deleteCase(deletingCaseId);
-        setCases((prevCases) =>
-          prevCases.filter((caseData) => caseData.id !== deletingCaseId),
-        );
-      } catch (error) {
-        console.error('Error deleting case:', error);
-      }
-    }
-    handleDeleteClose();
-  };
-
-  const handleAddCaseClick = () => {
+  const handleAddCaseClick = useCallback(() => {
     setMode('add');
     setEditingCase(null);
     setOpen(true);
-  };
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setMode('add');
+    setOpen(false);
+    setEditingCase(null);
+  }, []);
+
+  const handleSaveClick = useCallback(
+    async (data: Case) => {
+      if (mode === 'edit' && editingCase) {
+        await editCase(data);
+      } else {
+        await addCase(data);
+      }
+      handleClose();
+    },
+    [editCase, addCase, handleClose, mode, editingCase],
+  );
+
+  const handleDeleteClick = useCallback((caseId: number) => {
+    setDeletingCaseId(caseId);
+    setOpenDeleteDialog(true);
+  }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (deletingCaseId !== null) {
+      await removeCase(deletingCaseId);
+    }
+    setOpenDeleteDialog(false);
+    setDeletingCaseId(null);
+  }, [removeCase, deletingCaseId]);
+
+  const handleDeleteClose = useCallback(() => {
+    setOpenDeleteDialog(false);
+    setDeletingCaseId(null);
+  }, []);
 
   return (
     <FullPageWrapper>
-      {/* User Table */}
+      {loading && <Typography variant="h6">Loading...</Typography>}
+      {error && <Typography color="error">{error}</Typography>}
+
       <TableContainer component={Paper}>
         <TableDashboard aria-label="case table">
           <TableHead>
@@ -150,7 +104,6 @@ const CasesPage: FC = () => {
               <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
-
           <TableBody>
             {cases.map((caseData) => (
               <TableRow key={caseData.id}>
@@ -182,6 +135,7 @@ const CasesPage: FC = () => {
           </TableBody>
         </TableDashboard>
       </TableContainer>
+
       <Fab
         variant="extended"
         color="primary"
@@ -193,17 +147,15 @@ const CasesPage: FC = () => {
         Add Case
       </Fab>
 
-      {/* Edit Case Modal */}
       <CaseModel
         open={open}
         handleClose={handleClose}
-        handleSave={(data) => handleSaveClick(data)}
+        handleSave={handleSaveClick}
         label={mode === 'edit' ? 'Edit Case' : 'Add Case'}
         mode={mode}
         initialData={editingCase ?? undefined}
-        apiError={apiError}
       />
-      {/* Delete Confirmation Dialog */}
+
       <ConfirmationDialog
         openDeleteDialog={openDeleteDialog}
         handleDeleteClose={handleDeleteClose}

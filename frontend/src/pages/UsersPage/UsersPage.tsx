@@ -16,13 +16,7 @@ import { FullPageWrapper, TableDashboard } from '../../styles/common.styles';
 import { Edit, Delete, Add } from '@mui/icons-material';
 import ConfirmationDialog from '../../components/ConfirmationDialog/ConfirmationDialog';
 import UserModel from '../../components/UserModel/UserModel';
-import {
-  getUsers,
-  createUser,
-  deleteUser,
-  updateUser,
-} from '../../services/userService';
-import { handleApiError } from '../../utils/handleApiError';
+import { useUser } from '../../hooks/useUser';
 
 export interface User {
   id?: number;
@@ -34,41 +28,18 @@ export interface User {
 
 const UsersPage: FC = () => {
   const navigate = useNavigate();
+  const { users, loading, error, fetchUsers, addUser, editUser, removeUser } =
+    useUser();
   const [mode, setMode] = useState<'edit' | 'add'>('add');
-  const [users, setUsers] = useState<User[]>([]);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
-  const [apiError, setApiError] = useState<string>('');
-  const [isUserFound, setUserFound] = useState<string>('');
+  const [apiError, setApiError] = useState<string | null>('');
 
   useEffect(() => {
-    if (!open) {
-      setApiError(''); // Clear the API error when modal is closed
-    }
-  }, [open]);
-
-  useEffect(() => {
-    if (apiError) {
-      console.log('API server error: ', apiError);
-    }
-  }, [apiError]);
-
-  // Fetch users when the component mounts
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const fetchedUser = await getUsers();
-        setUsers(fetchedUser!);
-      } catch (error: unknown) {
-        console.error('Failed to load users', error);
-        const errorMessage = handleApiError(error);
-        setUserFound(errorMessage);
-      }
-    };
-    loadUsers();
-  }, []);
+    fetchUsers();
+  }, [fetchUsers]);
 
   // Navigate to the profile page
   const handleRowClickUser = useCallback(
@@ -77,6 +48,18 @@ const UsersPage: FC = () => {
     },
     [navigate],
   );
+
+  useEffect(() => {
+    if (error) {
+      setApiError(error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (!open) {
+      setApiError(''); // Clear the API error when modal is closed
+    }
+  }, [open]);
 
   // Open the modal for editing or adding a user
   const handleEditClick = useCallback((user: User) => {
@@ -92,35 +75,35 @@ const UsersPage: FC = () => {
   }, []);
 
   // Close the modal
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setMode('add');
     setOpen(false);
     setEditingUser(null);
-  };
+  }, []);
 
   // Save a new or edited user
-  const handleSaveClick = async (data: User) => {
-    try {
-      if (editingUser) {
-        // Update user
-        await updateUser(data);
-        setUsers((prevUsers) =>
-          prevUsers.map((editingUser) =>
-            data.id === editingUser.id ? data : editingUser,
-          ),
-        );
+  const handleSaveClick = useCallback(
+    async (data: User) => {
+      // try {
+      if (mode === 'edit' && editingUser) {
+        await editUser(data);
       } else {
-        // Add a new user
-        const newUser = await createUser(data);
-        setUsers((prevUsers) => [...prevUsers, newUser!]);
+        await addUser(data);
       }
-      handleClose();
-    } catch (error: unknown) {
-      console.error(error);
-      const errorMessage = handleApiError(error);
-      setApiError(errorMessage);
-    }
-  };
+      // Close the modal only if there was no error
+      if (!apiError) {
+        handleClose();
+      }
+      // } catch (err) {
+      //   console.log('catch:');
+      //   // If an error occurs, the modal remains open
+      //   console.error('Error saving user:', err);
+      //   setApiError(error);
+      //   console.log('catch:');
+      // }
+    },
+    [editUser, addUser, handleClose, mode, editingUser],
+  );
 
   // Handle delete user logic
   const handleDeleteClick = useCallback((userId: number) => {
@@ -128,31 +111,24 @@ const UsersPage: FC = () => {
     setOpenDeleteDialog(true);
   }, []);
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = useCallback(async () => {
     if (deletingUserId !== null) {
-      try {
-        await deleteUser(deletingUserId);
-        setUsers((prevUsers) =>
-          prevUsers.filter((user) => user.id !== deletingUserId),
-        );
-      } catch (error) {
-        console.error('Error deleting user:', error);
-        const errorMessage = handleApiError(error);
-        console.log(errorMessage);
-      }
+      await removeUser(deletingUserId);
     }
     setOpenDeleteDialog(false);
     setDeletingUserId(null);
-  };
+  }, [removeUser, deletingUserId]);
 
-  const handleDeleteClose = () => {
+  const handleDeleteClose = useCallback(() => {
     setOpenDeleteDialog(false);
     setDeletingUserId(null);
-  };
+  }, []);
 
   return (
     <FullPageWrapper>
-      {/* User Table */}
+      {loading && <Typography variant="h6">Loading...</Typography>}
+      {/* {error && <Typography color="error">{error}</Typography>} */}
+
       <TableContainer component={Paper}>
         <TableDashboard aria-label="user table">
           <TableHead>
@@ -210,7 +186,6 @@ const UsersPage: FC = () => {
         Add User
       </Fab>
 
-      {/* User Modal */}
       <UserModel
         open={open}
         handleClose={handleClose}
@@ -221,14 +196,11 @@ const UsersPage: FC = () => {
         apiError={apiError}
       />
 
-      {/* Delete Confirmation Dialog */}
       <ConfirmationDialog
         openDeleteDialog={openDeleteDialog}
         handleDeleteClose={handleDeleteClose}
         handleConfirmDelete={handleConfirmDelete}
       />
-
-      {isUserFound && <Typography variant="h6">User not found</Typography>}
     </FullPageWrapper>
   );
 };

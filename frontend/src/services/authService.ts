@@ -2,10 +2,10 @@ import { User } from "../pages/UsersPage/UsersPage";
 import apiClient from "./apiClient";
 import { handleApiCall } from "../utils/handleApiCall";
 
-export const loginUser = async ({ userEmail, userPassword }: { userEmail: string; userPassword: string }) => {
+export const loginUser = async ({ userEmail, userPassword }: { userEmail: string; userPassword: string }) : Promise<void>  => {
     return (handleApiCall(apiClient.post('/auth/login/', { email: userEmail, password: userPassword })));
   };
   
-export const signupUser = async (data: User) => {
+export const signupUser = async (data: User) : Promise<void>  => {
     return (handleApiCall(apiClient.post('/auth/signup/', data)));
   };

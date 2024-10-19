@@ -19,7 +19,6 @@ interface CaseModelProps {
   label: string;
   mode: string;
   initialData: Case | undefined;
-  apiError?: string;
   handleClose: () => void;
   handleSave: (data: Case) => void;
 }
@@ -29,7 +28,6 @@ const CaseModel: FC<CaseModelProps> = ({
   label,
   mode,
   initialData,
-  apiError,
   handleClose,
   handleSave,
 }) => {
@@ -43,7 +41,6 @@ const CaseModel: FC<CaseModelProps> = ({
 
   const [title, setTitle] = useState('');
   const [name, setName] = useState('');
-  // const [dateOpened, setDateOpened] = useState('');
   const [dateOpened, setDateOpened] = useState<string>(getCurrentDate());
   const [status, setStatus] = useState<string>('Not Started');
   const [isSaveEnabled, setIsSaveEnabled] = useState(false); // State to track if the Save button should be enabled
@@ -66,12 +63,6 @@ const CaseModel: FC<CaseModelProps> = ({
       handleSave(data);
     }
   };
-
-  useEffect(() => {
-    if (apiError) {
-      console.log('API server error: ', apiError);
-    }
-  }, [apiError]);
 
   useEffect(() => {
     if (open) {
@@ -114,11 +105,11 @@ const CaseModel: FC<CaseModelProps> = ({
           {label}
         </Typography>
 
-        {apiError && (
+        {/* {apiError && (
           <Typography color="error" sx={{ marginTop: '8px' }}>
             {apiError}
           </Typography>
-        )}
+        )} */}
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <CustomTextField

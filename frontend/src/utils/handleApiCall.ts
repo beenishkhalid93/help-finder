@@ -10,13 +10,13 @@ export const handleApiCall = async <T>(apiCall: Promise<AxiosResponse<ApiRespons
     if (response.status) {
       return response.data as T;
     } else {
-      throw new Error(response.message || 'Something went wrong');
+      throw { message: response.message || 'Something went wrong', statusCode: axiosResponse.status };
     }
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('Caught Error: ', error.message);
       throw new Error(error.message);
     }
-    throw new Error('An unexpected error occurred');
+    throw { message: 'An unexpected error occurred', statusCode: 500 };
   }
 };
