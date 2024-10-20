@@ -18,6 +18,7 @@ interface UserModelProps {
   apiError?: string | null;
   handleClose: () => void;
   handleSave: (data: User) => void;
+  handleInputChange: () => void;
 }
 
 const UserModel: FC<UserModelProps> = ({
@@ -28,6 +29,7 @@ const UserModel: FC<UserModelProps> = ({
   apiError,
   handleClose,
   handleSave,
+  handleInputChange,
 }) => {
   const [firstname, setFirstname] = useState('');
   const [surname, setSurname] = useState('');
@@ -37,6 +39,14 @@ const UserModel: FC<UserModelProps> = ({
   const [firstnameError, setFirstnameError] = useState(false);
   const [surnameError, setSurnameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
+
+  const handleInput = (
+    value: string,
+    setState: React.Dispatch<React.SetStateAction<string>>,
+  ) => {
+    setState(value);
+    handleInputChange();
+  };
 
   const handleClickSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -57,12 +67,6 @@ const UserModel: FC<UserModelProps> = ({
       handleSave(data);
     }
   };
-
-  useEffect(() => {
-    if (apiError) {
-      console.log('API server in model: ', apiError);
-    }
-  }, [apiError]);
 
   useEffect(() => {
     if (open) {
@@ -111,31 +115,28 @@ const UserModel: FC<UserModelProps> = ({
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <CustomTextField
-            // label={'User Firstname'}
             placeholder={'Firstname'}
             name={'firstname'}
             value={firstname}
-            onChange={(e) => setFirstname(e.target.value)}
+            onChange={(e) => handleInput(e.target.value, setFirstname)}
             error={firstnameError}
             startIcon={<AccountCircle />}
             helperText={firstnameError ? 'Error: Invalid firstname' : ''}
           />
           <CustomTextField
-            // label={'User Surname'}
             placeholder={'Surname'}
             name={'surname'}
             value={surname}
-            onChange={(e) => setSurname(e.target.value)}
+            onChange={(e) => handleInput(e.target.value, setSurname)}
             error={surnameError}
             startIcon={<AccountCircle />}
             helperText={surnameError ? 'Error: Invalid surname' : ''}
           />
           <CustomTextField
-            // label={'User Email'}
             placeholder={'Email'}
             name={'email'}
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => handleInput(e.target.value, setEmail)}
             error={emailError}
             startIcon={<Mail />}
             helperText={emailError ? 'Error: Invalid email' : ''}

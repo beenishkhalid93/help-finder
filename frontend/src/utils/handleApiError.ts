@@ -1,18 +1,17 @@
 import axios from "axios";
 
-export const handleApiError = (error: unknown) => {
+export const handleApiError = (error: unknown): string => {
+  let errorMessage = 'An unexpected error occurred';
 
-    let errorMessage = '';
-    if (axios.isAxiosError(error)) {
-        errorMessage = error.response?.data?.message || 'Login failed';
-      } 
-    else {
-        errorMessage = String(error);
-        if (errorMessage.startsWith('Error: ')) {
-          errorMessage = errorMessage.replace('Error: ', '');
-          return errorMessage;
-        }
-      }
+  if (axios.isAxiosError(error)) {
+    errorMessage = error.response?.data?.message || 'An error occurred while processing the request';
+  } else if (error instanceof Error) {
+    errorMessage = error.message;
+  }
+  if (errorMessage.startsWith('Error: ')) {
+    errorMessage = errorMessage.replace('Error: ', '');
+  }
 
-    return errorMessage;
-}
+  console.error('Caught Error:', errorMessage);
+  return errorMessage;
+};

@@ -28,20 +28,30 @@ export interface User {
 
 const UsersPage: FC = () => {
   const navigate = useNavigate();
-  const { users, loading, error, fetchUsers, addUser, editUser, removeUser } =
-    useUser();
+  const {
+    users,
+    loading,
+    error,
+    setError,
+    fetchUsers,
+    addUser,
+    editUser,
+    removeUser,
+  } = useUser();
   const [mode, setMode] = useState<'edit' | 'add'>('add');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
-  const [apiError, setApiError] = useState<string | null>('');
 
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Navigate to the profile page
+  const handleInputChange = () => {
+    setError(null);
+  };
+
   const handleRowClickUser = useCallback(
     (userId: number) => {
       navigate(`/dashboard/profile/${userId}`);
@@ -49,19 +59,6 @@ const UsersPage: FC = () => {
     [navigate],
   );
 
-  useEffect(() => {
-    if (error) {
-      setApiError(error);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (!open) {
-      setApiError(''); // Clear the API error when modal is closed
-    }
-  }, [open]);
-
-  // Open the modal for editing or adding a user
   const handleEditClick = useCallback((user: User) => {
     setMode('edit');
     setEditingUser(user);
@@ -74,38 +71,26 @@ const UsersPage: FC = () => {
     setOpen(true);
   }, []);
 
-  // Close the modal
   const handleClose = useCallback(() => {
     setMode('add');
     setOpen(false);
     setEditingUser(null);
   }, []);
 
-  // Save a new or edited user
   const handleSaveClick = useCallback(
     async (data: User) => {
-      // try {
       if (mode === 'edit' && editingUser) {
         await editUser(data);
       } else {
         await addUser(data);
       }
-      // Close the modal only if there was no error
-      if (!apiError) {
+      if (!error) {
         handleClose();
       }
-      // } catch (err) {
-      //   console.log('catch:');
-      //   // If an error occurs, the modal remains open
-      //   console.error('Error saving user:', err);
-      //   setApiError(error);
-      //   console.log('catch:');
-      // }
     },
-    [editUser, addUser, handleClose, mode, editingUser],
+    [editUser, addUser, handleClose, error, mode, editingUser],
   );
 
-  // Handle delete user logic
   const handleDeleteClick = useCallback((userId: number) => {
     setDeletingUserId(userId);
     setOpenDeleteDialog(true);
@@ -127,7 +112,6 @@ const UsersPage: FC = () => {
   return (
     <FullPageWrapper>
       {loading && <Typography variant="h6">Loading...</Typography>}
-      {/* {error && <Typography color="error">{error}</Typography>} */}
 
       <TableContainer component={Paper}>
         <TableDashboard aria-label="user table">
@@ -190,10 +174,11 @@ const UsersPage: FC = () => {
         open={open}
         handleClose={handleClose}
         handleSave={handleSaveClick}
+        handleInputChange={handleInputChange}
         label={mode === 'edit' ? 'Edit User' : 'Add User'}
         mode={mode}
         initialData={editingUser ?? undefined}
-        apiError={apiError}
+        apiError={error}
       />
 
       <ConfirmationDialog

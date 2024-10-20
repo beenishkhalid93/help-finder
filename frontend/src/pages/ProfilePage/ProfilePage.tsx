@@ -8,45 +8,40 @@ import {
   isValidFirstname,
   isValidSurname,
 } from '../../utils/validation';
-import { getUserById, updateUser } from '../../services/userService';
-import { handleApiError } from '../../utils/handleApiError';
+import { useUser } from '../../hooks/useUser';
 
 interface UserProfile {
   id?: number;
   firstname: string;
   surname: string;
   email: string;
-  profilePicture?: string; // URL or base64 string for the profile picture
+  profilePicture?: string;
 }
 
 const ProfilePage: FC = () => {
   const params = useParams(); // Extract user_id from URL
   const userId = Number.parseInt(params.user ?? '');
-  const [profile, setProfile] = useState<UserProfile | null>(null); // Profile state
-  const [isSaveEnabled, setSaveEnabled] = useState(false); // State to track if the Save button should be enabled
+  const { users, editUser, fetchUsers, error, loading, setError } = useUser();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isSaveEnabled, setSaveEnabled] = useState(false);
   const [isFieldChange, setFieldChange] = useState(false);
   const [errors, setErrors] = useState({
     firstname: false,
     surname: false,
     email: false,
   });
-  const [apiError, setApiError] = useState<string>('');
 
-  // Fetch user profile by ID
+  // Fetch user profile by ID using the useUser hook
   useEffect(() => {
-    const fetchUser = async (userId: number) => {
-      try {
-        const user = await getUserById(userId);
-        setProfile(user!); // Set the fetched user profile to the state
-      } catch (error) {
-        console.error('Error fetching user:', error);
-      }
-    };
-
-    if (userId) {
-      fetchUser(userId);
+    const user = users.find((user) => user.id === userId);
+    if (user) {
+      setProfile(user);
+    } else if (userId) {
+      fetchUsers().catch((fetchError) => {
+        console.error('Error fetching users:', fetchError);
+      });
     }
-  }, [userId]);
+  }, [userId, users, fetchUsers]);
 
   // Validate profile data when fields change
   useEffect(() => {
@@ -59,9 +54,9 @@ const ProfilePage: FC = () => {
       };
       setErrors(newErrors);
       setSaveEnabled(!Object.values(newErrors).includes(true));
-      setApiError('');
+      setError(null); // Clear previous API error on field change
     }
-  }, [profile, isFieldChange]);
+  }, [profile, isFieldChange, setError]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -92,24 +87,15 @@ const ProfilePage: FC = () => {
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSaveEnabled && profile) {
-      try {
-        const response = await updateUser(profile);
-        console.log('User updated:', response);
-        setSaveEnabled(false);
-        setFieldChange(false);
-      } catch (error) {
-        console.error('Error updating user:', error);
-        const errorMessage = handleApiError(error);
-        setApiError(errorMessage);
-      }
+      await editUser(profile);
+      setSaveEnabled(false);
+      setFieldChange(false);
     }
   };
 
-  // Render error message if field is invalid
   const renderError = (error: boolean, field: string) => {
     return (
       error && (
@@ -131,8 +117,8 @@ const ProfilePage: FC = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        gap: '16px', // Space between form fields
-        maxWidth: '80%', // Limit form width
+        gap: '16px',
+        maxWidth: '80%',
         margin: '70px',
       }}
     >
@@ -152,7 +138,7 @@ const ProfilePage: FC = () => {
             type="file"
             accept="image/*"
             hidden
-            onChange={handleImageChange} // Handle image upload
+            onChange={handleImageChange}
           />
         </Button>
       </Box>
@@ -193,9 +179,11 @@ const ProfilePage: FC = () => {
         Submit
       </Button>
 
-      {apiError && (
+      {loading && <Typography variant="h6">Loading...</Typography>}
+
+      {error && (
         <Typography variant="body1" color="error">
-          {apiError}
+          {error}
         </Typography>
       )}
     </Box>

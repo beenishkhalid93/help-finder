@@ -22,10 +22,8 @@ import {
   FullPageWrapper,
   TextFieldContainer,
 } from '../../styles/common.styles';
-import { signupUser } from '../../services/authService';
-import { handleApiError } from '../../utils/handleApiError';
+import { useAuth } from '../../hooks/useAuth';
 
-// Define the interface for a new user
 interface User {
   firstname: string;
   surname: string;
@@ -35,6 +33,7 @@ interface User {
 
 const RegisterPage: FC = () => {
   const navigate = useNavigate();
+  const { signup, loading, error, setError } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState<User>({
@@ -51,13 +50,10 @@ const RegisterPage: FC = () => {
     password: false,
   });
 
-  const [apiError, setApiError] = useState<string>('');
-  // Toggles password visibility
   const handleClickShowPassword = useCallback(() => {
     setShowPassword((prev) => !prev);
   }, []);
 
-  // Consolidate validation logic
   const validateForm = () => {
     const newErrors = {
       firstname: !isValidFirstname(formData.firstname),
@@ -67,33 +63,30 @@ const RegisterPage: FC = () => {
     };
     setErrors(newErrors);
 
-    return !Object.values(newErrors).includes(true); // Returns false if there are any errors
+    return !Object.values(newErrors).includes(true);
   };
 
-  // Handles text field changes
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData({
       ...formData,
       [name]: value,
     });
+    setError(null);
   };
 
-  // Handles registration submission
   const handleClickRegister = async (
     e: React.MouseEvent<HTMLButtonElement>,
   ) => {
     e.preventDefault();
     if (validateForm()) {
-      try {
-        const createdUser = await signupUser(formData);
-        console.log('User created:', createdUser);
-        navigate('/dashboard');
-      } catch (error: unknown) {
-        console.error(error);
-        const errorMessage = handleApiError(error);
-        setApiError(errorMessage);
-      }
+      await signup(
+        formData.firstname,
+        formData.surname,
+        formData.email,
+        formData.password,
+      );
+      navigate('/dashboard');
     }
   };
 
@@ -155,9 +148,12 @@ const RegisterPage: FC = () => {
         showRegister={true}
         clickRegister={handleClickRegister}
       />
-      {apiError && (
+
+      {loading && <Typography variant="h6">Loading...</Typography>}
+
+      {error && (
         <Typography variant="body1" color="error">
-          {apiError}
+          {error}
         </Typography>
       )}
     </FullPageWrapper>

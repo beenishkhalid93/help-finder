@@ -7,6 +7,7 @@ interface UseCaseReturn {
   cases: Case[];
   loading: boolean;
   error: string | null;
+  setError: React.Dispatch<React.SetStateAction<string | null>>;
   fetchCases: () => Promise<void>;
   addCase: (data: Case) => Promise<void>;
   editCase: (data: Case) => Promise<void>;
@@ -26,7 +27,9 @@ export const useCase = (): UseCaseReturn => {
       const fetchedCases = await getCases();
       setCases(fetchedCases);
     } catch (err) {
-      setError(handleApiError(err));
+      const errorMessage = handleApiError(err);
+      setError(errorMessage); 
+      throw new Error(errorMessage); 
     } finally {
       setLoading(false);
     }
@@ -40,7 +43,9 @@ export const useCase = (): UseCaseReturn => {
       const newCase = await createCase(data);
       setCases((prevCases) => [...prevCases, newCase]);
     } catch (err) {
-      setError(handleApiError(err));
+      const errorMessage = handleApiError(err);
+      setError(errorMessage); 
+      throw new Error(errorMessage); 
     } finally {
       setLoading(false);
     }
@@ -56,7 +61,9 @@ export const useCase = (): UseCaseReturn => {
         prevCases.map((caseItem) => (caseItem.id === data.id ? data : caseItem))
       );
     } catch (err) {
-      setError(handleApiError(err));
+      const errorMessage = handleApiError(err);
+      setError(errorMessage); 
+      throw new Error(errorMessage); 
     } finally {
       setLoading(false);
     }
@@ -70,7 +77,9 @@ export const useCase = (): UseCaseReturn => {
       await deleteCase(caseId);
       setCases((prevCases) => prevCases.filter((caseItem) => caseItem.id !== caseId));
     } catch (err) {
-      setError(handleApiError(err));
+      const errorMessage = handleApiError(err);
+      setError(errorMessage); 
+      throw new Error(errorMessage); 
     } finally {
       setLoading(false);
     }
@@ -80,6 +89,7 @@ export const useCase = (): UseCaseReturn => {
     cases,
     loading,
     error,
+    setError,
     fetchCases,
     addCase,
     editCase,

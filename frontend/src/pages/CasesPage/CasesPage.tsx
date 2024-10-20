@@ -26,8 +26,16 @@ export interface Case {
 }
 
 const CasesPage: FC = () => {
-  const { cases, loading, error, fetchCases, addCase, editCase, removeCase } =
-    useCase();
+  const {
+    cases,
+    loading,
+    error,
+    setError,
+    fetchCases,
+    addCase,
+    editCase,
+    removeCase,
+  } = useCase();
 
   const [mode, setMode] = useState<'edit' | 'add'>('add');
   const [editingCase, setEditingCase] = useState<Case | null>(null);
@@ -38,6 +46,10 @@ const CasesPage: FC = () => {
   useEffect(() => {
     fetchCases();
   }, [fetchCases]);
+
+  const handleInputChange = () => {
+    setError(null);
+  };
 
   const handleEditClick = useCallback((caseData: Case) => {
     setMode('edit');
@@ -64,9 +76,11 @@ const CasesPage: FC = () => {
       } else {
         await addCase(data);
       }
-      handleClose();
+      if (!error) {
+        handleClose();
+      }
     },
-    [editCase, addCase, handleClose, mode, editingCase],
+    [editCase, addCase, handleClose, error, mode, editingCase],
   );
 
   const handleDeleteClick = useCallback((caseId: number) => {
@@ -90,7 +104,6 @@ const CasesPage: FC = () => {
   return (
     <FullPageWrapper>
       {loading && <Typography variant="h6">Loading...</Typography>}
-      {error && <Typography color="error">{error}</Typography>}
 
       <TableContainer component={Paper}>
         <TableDashboard aria-label="case table">
@@ -151,9 +164,11 @@ const CasesPage: FC = () => {
         open={open}
         handleClose={handleClose}
         handleSave={handleSaveClick}
+        handleInputChange={handleInputChange}
         label={mode === 'edit' ? 'Edit Case' : 'Add Case'}
         mode={mode}
         initialData={editingCase ?? undefined}
+        apiError={error}
       />
 
       <ConfirmationDialog

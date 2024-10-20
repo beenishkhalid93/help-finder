@@ -10,52 +10,44 @@ import {
   FullPageWrapper,
   TextFieldContainer,
 } from '../../styles/common.styles';
-import { loginUser } from '../../services/authService';
-import { handleApiError } from '../../utils/handleApiError';
+import { useAuth } from '../../hooks/useAuth';
 
 const LoginPage: FC = () => {
   const navigate = useNavigate();
+  const { login, error, loading, setError } = useAuth();
 
   const [showPassword, setShowPassword] = useState(false);
-
   const [emailText, setEmailText] = useState('');
   const [passwordText, setPasswordText] = useState('');
-
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const [error, setError] = useState('');
 
   const handleClickShowPassword = () => {
-    setShowPassword((prev: unknown) => !prev);
+    setShowPassword((prev) => !prev);
   };
+
   const handleClickLogin = async (): Promise<void> => {
     setEmailError(!isValidEmail(emailText));
     setPasswordError(!isValidPassword(passwordText));
 
     if (isValidEmail(emailText) && isValidPassword(passwordText)) {
-      try {
-        await loginUser({
-          userEmail: emailText,
-          userPassword: passwordText,
-        });
-        navigate('/dashboard');
-      } catch (error: unknown) {
-        const errorMessage = handleApiError(error);
-        setError(errorMessage);
-      }
+      await login(emailText, passwordText);
+      navigate('/dashboard');
     }
   };
 
-  function handleClickRegister(): void {
+  const handleClickRegister = (): void => {
     navigate('/register');
-  }
+  };
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmailText(event.target.value);
+    setError(null);
   };
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPasswordText(event.target.value);
+    setError(null);
   };
 
   return (
@@ -64,7 +56,7 @@ const LoginPage: FC = () => {
 
       <TextFieldContainer>
         <CustomTextField
-          placeholder={'Email'}
+          placeholder="Email"
           value={emailText}
           onChange={handleEmailChange}
           error={emailError}
@@ -73,7 +65,7 @@ const LoginPage: FC = () => {
         />
 
         <CustomTextField
-          placeholder={'Password'}
+          placeholder="Password"
           value={passwordText}
           onChange={handlePasswordChange}
           error={passwordError}
@@ -87,6 +79,8 @@ const LoginPage: FC = () => {
           }
         />
       </TextFieldContainer>
+
+      {loading && <Typography variant="h6">Loading...</Typography>}
 
       {error && (
         <Typography variant="h6" color="error" sx={{ marginTop: '8px' }}>

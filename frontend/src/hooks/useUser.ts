@@ -1,11 +1,13 @@
 import { useState, useCallback } from 'react';
 import { User } from '../pages/UsersPage/UsersPage';
 import { getUsers, createUser, updateUser, deleteUser } from '../services/userService';
+import { handleApiError } from '../utils/handleApiError';
 
 interface UseUserHook {
   users: User[];
   loading: boolean;
   error: string | null;
+  setError: React.Dispatch<React.SetStateAction<string | null>>;
   fetchUsers: () => Promise<void>;
   addUser: (user: User) => Promise<void>;
   editUser: (user: User) => Promise<void>;
@@ -25,7 +27,9 @@ export const useUser = (): UseUserHook => {
       const fetchedUsers = await getUsers();
       setUsers(fetchedUsers);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = handleApiError(err);
+      setError(errorMessage); 
+      throw new Error(errorMessage); 
     } finally {
       setLoading(false);
     }
@@ -40,18 +44,9 @@ export const useUser = (): UseUserHook => {
       setUsers((prevUsers) => [...prevUsers, newUser]);
       setError(null);
     } catch (err) {
-        console.log('catch in hook')
-     
-      
-      if (err instanceof Error) {
-        setError(err.message);
-        console.error('Caught Error: ', err.message);
-        throw new Error(err.message);
-      }
-      else{
-        console.error('Caught Error: An error occurred');
-    }
-
+      const errorMessage = handleApiError(err);
+      setError(errorMessage); 
+      throw new Error(errorMessage); 
     } finally {
       setLoading(false);
     }
@@ -67,7 +62,9 @@ export const useUser = (): UseUserHook => {
         prevUsers.map((u) => (u.id === user.id ? user : u))
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = handleApiError(err);
+      setError(errorMessage); 
+      throw new Error(errorMessage); 
     } finally {
       setLoading(false);
     }
@@ -81,7 +78,9 @@ export const useUser = (): UseUserHook => {
       await deleteUser(userId);
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const errorMessage = handleApiError(err);
+      setError(errorMessage); 
+      throw new Error(errorMessage); 
     } finally {
       setLoading(false);
     }
@@ -91,6 +90,7 @@ export const useUser = (): UseUserHook => {
     users,
     loading,
     error,
+    setError,
     fetchUsers,
     addUser,
     editUser,

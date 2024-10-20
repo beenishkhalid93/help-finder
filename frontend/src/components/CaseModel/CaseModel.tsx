@@ -19,8 +19,10 @@ interface CaseModelProps {
   label: string;
   mode: string;
   initialData: Case | undefined;
+  apiError?: string | null;
   handleClose: () => void;
   handleSave: (data: Case) => void;
+  handleInputChange: () => void;
 }
 
 const CaseModel: FC<CaseModelProps> = ({
@@ -28,8 +30,10 @@ const CaseModel: FC<CaseModelProps> = ({
   label,
   mode,
   initialData,
+  apiError,
   handleClose,
   handleSave,
+  handleInputChange,
 }) => {
   const getCurrentDate = (): string => {
     const today = new Date();
@@ -47,6 +51,14 @@ const CaseModel: FC<CaseModelProps> = ({
 
   const [titleError, setTitleError] = useState(false);
   const [nameError, setNameError] = useState(false);
+
+  const handleInput = (
+    value: string,
+    setState: React.Dispatch<React.SetStateAction<string>>,
+  ) => {
+    setState(value);
+    handleInputChange();
+  };
 
   const handleClickSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -105,21 +117,19 @@ const CaseModel: FC<CaseModelProps> = ({
           {label}
         </Typography>
 
-        {/* {apiError && (
+        {apiError && (
           <Typography color="error" sx={{ marginTop: '8px' }}>
             {apiError}
           </Typography>
-        )} */}
+        )}
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           <CustomTextField
             label={'Title'}
-            // placeholder={'Title'}
             name={'title'}
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => handleInput(e.target.value, setTitle)}
             error={titleError}
-            // startIcon={<AccountCircle />}
             helperText={titleError ? 'Error: Invalid title' : ''}
           />
           <CustomTextField
@@ -127,7 +137,7 @@ const CaseModel: FC<CaseModelProps> = ({
             // placeholder={'User Name'}
             name={'name'}
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => handleInput(e.target.value, setName)}
             error={nameError}
             startIcon={<AccountCircle />}
             helperText={nameError ? 'Error: Invalid name' : ''}
@@ -137,15 +147,14 @@ const CaseModel: FC<CaseModelProps> = ({
             name={'date_opened'}
             type="date"
             value={dateOpened}
-            onChange={(e) => setDateOpened(e.target.value)}
+            onChange={(e) => handleInput(e.target.value, setDateOpened)}
           />
           <InputLabel id="demo-simple-select-label">Status</InputLabel>
           <Select
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={status} // Binds the state to the select value
-            onChange={(e) => setStatus(e.target.value)}
-            // label="Status"
+            value={status}
+            onChange={(e) => handleInput(e.target.value, setStatus)}
           >
             <MenuItem value="Not Started">Not Started</MenuItem>
             <MenuItem value="In Progress">In Progress</MenuItem>
