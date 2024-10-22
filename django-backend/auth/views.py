@@ -4,7 +4,9 @@ from django.contrib.auth.hashers import check_password
 from users.models import User
 from .serializers import SignupSerializer, LoginSerializer
 from django_backend.utils import APIResponse  # Import the updated APIResponse utility
-
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 
 @api_view(['POST'])
 def signup_user(request):
@@ -20,13 +22,21 @@ def signup_user(request):
             )
         
         # Save the new user
-        serializer.save()
-        email = request.data.get('email')
-        user = User.objects.get(email=email)
+        user = serializer.save()
+
+        # Generate JWT tokens for the new user
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
         return APIResponse(
             status=True, 
             message='Signup successful', 
-            data={'email': user.email, 'firstname': user.firstname}, 
+            data={
+                'email': user.email, 
+                'firstname': user.firstname, 
+                'access_token': access_token,
+                'refresh_token': str(refresh),
+            },
             code=status.HTTP_201_CREATED
         )
         
@@ -34,7 +44,8 @@ def signup_user(request):
     return APIResponse(
         status=False, 
         message='Signup failed', 
-        error=error_response['email'][0], 
+        # error=error_response['email'][0], 
+        error=error_response.get('email', ['Invalid data'])[0], 
         code=status.HTTP_400_BAD_REQUEST
     )
 
@@ -68,3 +79,8 @@ def login_user(request):
         data={'email': user.email, 'firstname': user.firstname}, 
         code=status.HTTP_200_OK
     )
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def protected_view(request):
+    return Response({'message': 'This is a protected view'}, status=status.HTTP_200_OK)

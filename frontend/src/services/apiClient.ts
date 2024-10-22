@@ -11,7 +11,7 @@ const apiClient: AxiosInstance = axios.create({
 // Interceptor to modify request headers (e.g., add an authorization token)
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    const token = localStorage.getItem('token'); // Example: Add token from localStorage
+    const token = localStorage.getItem('accessToken'); // Example: Add token from localStorage
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
