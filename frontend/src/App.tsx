@@ -8,28 +8,40 @@ import UsersPage from './pages/UsersPage/UsersPage';
 import CasesPage from './pages/CasesPage/CasesPage';
 import DashboardPage from './pages/DashboardPage/DashboardPage';
 import { FC } from 'react';
+import PrivateRoute from './components/PrivateRoute';
 
 const App: FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* No Navbar on these pages */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/landing" element={<LandingPage />} />
-        <Route path="/" element={<LandingPage />} />
+        {/* Public route for login */}
+        {/* <Route path="/login" element={<LoginPage />} /> */}
+
+        {/* PrivateRoute wraps all the protected routes */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/dashboard/*" element={<DashboardLayout />}>
+            <Route path="users" element={<UsersPage />} />
+            <Route path="cases" element={<CasesPage />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="" element={<DashboardPage />} />
+            <Route path="profile/:user" element={<ProfilePage />} />
+          </Route>
+        </Route>
 
         {/* Pages with Navbar (Dashboard, Users, Cases) */}
-        <Route path="/dashboard/*" element={<DashboardLayout />}>
+        {/* <Route path="/dashboard/*" element={<DashboardLayout />}>
           <Route path="users" element={<UsersPage />} />
           <Route path="cases" element={<CasesPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="" element={<DashboardPage />} />
           <Route path="profile/:user" element={<ProfilePage />} />
-        </Route>
+        </Route> */}
 
-        {/* Profile can be under dashboard layout or separate, depending on your need */}
-        {/* <Route path="/profile/:user" element={<ProfilePage />} /> */}
+        {/* No Navbar on these pages */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/landing" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -6,9 +6,12 @@ from .serializers import SignupSerializer, LoginSerializer
 from django_backend.utils import APIResponse  # Import the updated APIResponse utility
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 @api_view(['POST'])
+# @permission_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
 def signup_user(request):
     serializer = SignupSerializer(data=request.data)
     if serializer.is_valid():
@@ -51,10 +54,13 @@ def signup_user(request):
 
 
 @api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
 def login_user(request):
     email = request.data.get('email')
     password = request.data.get('password')
 
+    # Check if the user exists
     try:
         user = User.objects.get(email=email)
     except User.DoesNotExist:
@@ -65,6 +71,7 @@ def login_user(request):
             code=status.HTTP_401_UNAUTHORIZED
         )
 
+    # Verify the password
     if not check_password(password, user.password):
         return APIResponse(
             status=False, 
@@ -73,14 +80,26 @@ def login_user(request):
             code=status.HTTP_401_UNAUTHORIZED
         )
 
+    # Generate JWT tokens for the authenticated user
+    refresh = RefreshToken.for_user(user)
+    access_token = str(refresh.access_token)
+
+    # Return the response with the tokens
     return APIResponse(
         status=True, 
         message='Login successful', 
-        data={'email': user.email, 'firstname': user.firstname}, 
+        data={
+            'email': user.email, 
+            'firstname': user.firstname,
+            'access_token': access_token,
+            'refresh_token': str(refresh),
+        }, 
         code=status.HTTP_200_OK
     )
 
+
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def protected_view(request):
+    print('This is a protected view')
     return Response({'message': 'This is a protected view'}, status=status.HTTP_200_OK)

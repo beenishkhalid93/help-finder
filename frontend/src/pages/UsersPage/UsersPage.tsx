@@ -48,6 +48,8 @@ const UsersPage: FC = () => {
     fetchUsers();
   }, [fetchUsers]);
 
+  console.log('Users:', users);
+
   const handleInputChange = () => {
     setError(null);
   };

@@ -11,7 +11,22 @@ interface AuthResponse {
 }
 
 export const loginUser = async ({ userEmail, userPassword }: { userEmail: string; userPassword: string }) : Promise<AuthResponse>  => {
-    return handleApiCall(apiClient.post<ApiResponse<AuthResponse>>('/auth/login/', { email: userEmail, password: userPassword }));
+    // return handleApiCall(apiClient.post<ApiResponse<AuthResponse>>('/auth/login/', { email: userEmail, password: userPassword }));
+    // Call your API using handleApiCall to log in
+    const response = await handleApiCall(
+      apiClient.post<ApiResponse<AuthResponse>>('/auth/login/', { email: userEmail, password: userPassword })
+    );
+
+    // Assuming the response contains the access_token and refresh_token
+    const { access_token, refresh_token } = response;
+
+    console.log("Token", access_token);
+    // Store tokens in local storage
+    localStorage.setItem('accessToken', access_token);
+    localStorage.setItem('refreshToken', refresh_token);
+
+    // Return the response data for further use if needed
+    return response;
   };
   
 export const signupUser = async (data: User): Promise<AuthResponse> => {

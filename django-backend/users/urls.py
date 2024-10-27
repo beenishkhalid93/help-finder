@@ -1,14 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import views
-from .views import UserViewSet
-
-router = DefaultRouter()
-router.register(r'users', UserViewSet)
+from .views import findOne, findAll, create
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('', views.index, name='index'),  # Add your views here
+    path('<int:id>/', findOne, name='retrive_user_by_ID'),
+    path('', findAll, name='list_all_users'),
+    path('', create, name='create_user'),
+    # path('update/', list_users, name='list_users'),
+    # path('remove/', list_users, name='list_users'),
 ]
-
-urlpatterns = router.urls

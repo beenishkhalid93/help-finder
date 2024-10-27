@@ -1,4 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import {jwtDecode} from 'jwt-decode';
+
+const publicRoutes = ['/auth/login/', '/auth/signup/'];
 
 // Create an Axios instance with default configuration
 const apiClient: AxiosInstance = axios.create({
@@ -11,14 +14,47 @@ const apiClient: AxiosInstance = axios.create({
 // Interceptor to modify request headers (e.g., add an authorization token)
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    const token = localStorage.getItem('accessToken'); // Example: Add token from localStorage
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    const isPublicRoute = publicRoutes.includes(config.url || '');
+    console.log("is public",isPublicRoute)
+    if(!isPublicRoute) {
+      const token = localStorage.getItem('accessToken'); // Example: Add token from localStorage
+      console.log('token: ', token);
+      if (token) {
+        const decodedToken = jwtDecode(token);
+        console.log('Decoded JWT:', decodedToken);
+        config.headers.Authorization = `Bearer ${token}`;
+        console.log('Request headers:', config.headers);
+      }
     }
+
+    console.log('Request headers:', config.headers);
+    
     return config;
   },
   (error) => Promise.reject(error)
 );
+
+// apiClient.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {
+//       const originalRequest = error.config;
+//       if (error.response.status === 401 && !originalRequest._retry) {
+//           originalRequest._retry = true;
+//           try {
+//               const newToken = await refreshToken();
+//               axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+//               return apiClient(originalRequest);
+//           } catch (refreshError) {
+//               console.error('Token refresh failed:', refreshError);
+//               localStorage.removeItem('accessToken');
+//               localStorage.removeItem('refreshToken');
+//               window.location.href = '/login';
+//           }
+//       }
+//       return Promise.reject(error);
+//   }
+// );
+
 
 // Interceptor to handle responses
 apiClient.interceptors.response.use(
