@@ -40,7 +40,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     firstname = models.CharField(max_length=100, null=True)
     surname = models.CharField(max_length=100, null=True)
     # email = models.EmailField(unique=True, null=False)
-    email = models.EmailField(unique=True, null=False, default="unknown@example.com")
+    email = models.EmailField(unique=True, null=False, default="unknown@example.com")  # Set default email here
+    password = models.CharField(max_length=100, null=False, default="Password@123")
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

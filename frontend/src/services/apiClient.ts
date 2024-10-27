@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import {jwtDecode} from 'jwt-decode';
+import { refreshToken } from './authService';
 
 const publicRoutes = ['/auth/login/', '/auth/signup/'];
 
@@ -34,26 +35,26 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// apiClient.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//       const originalRequest = error.config;
-//       if (error.response.status === 401 && !originalRequest._retry) {
-//           originalRequest._retry = true;
-//           try {
-//               const newToken = await refreshToken();
-//               axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-//               return apiClient(originalRequest);
-//           } catch (refreshError) {
-//               console.error('Token refresh failed:', refreshError);
-//               localStorage.removeItem('accessToken');
-//               localStorage.removeItem('refreshToken');
-//               window.location.href = '/login';
-//           }
-//       }
-//       return Promise.reject(error);
-//   }
-// );
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+      const originalRequest = error.config;
+      if (error.response.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+          try {
+              const newToken = await refreshToken();
+              axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+              return apiClient(originalRequest);
+          } catch (refreshError) {
+              console.error('Token refresh failed:', refreshError);
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('refreshToken');
+              window.location.href = '/login';
+          }
+      }
+      return Promise.reject(error);
+  }
+);
 
 
 // Interceptor to handle responses

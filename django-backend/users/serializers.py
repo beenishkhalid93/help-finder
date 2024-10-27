@@ -1,7 +1,11 @@
 from rest_framework import serializers
 from .models import User
+from django.contrib.auth.hashers import make_password
 
 class UserSerializer(serializers.ModelSerializer):
+
+    # password = serializers.CharField(write_only=True, required=True)  # Ensure password is required
+
     class Meta:
         model = User
         fields = ['id','firstname', 'surname', 'email', 'password']

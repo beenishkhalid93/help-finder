@@ -45,6 +45,7 @@ export const useUser = (): UseUserHook => {
       setError(null);
     } catch (err) {
       const errorMessage = handleApiError(err);
+      console.log('Error message: ',err);
       setError(errorMessage); 
       throw new Error(errorMessage); 
     } finally {

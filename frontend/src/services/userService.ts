@@ -13,13 +13,13 @@ export const getUserById = async (userId: number) : Promise<User> => {
 };
 
 export const createUser = async (data: User) : Promise<User>  => {
-  return (handleApiCall(apiClient.post<ApiResponse<User>>('/users/', data)));
+  return (handleApiCall(apiClient.post<ApiResponse<User>>('/users/create/', data)));
 };
 
 export const updateUser = async (data: User) : Promise<User>  => {
-  return (handleApiCall(apiClient.put<ApiResponse<User>>(`/users/${data.id}/`, data)));
+  return (handleApiCall(apiClient.put<ApiResponse<User>>(`/users/update/${data.id}/`, data)));
 };
 
 export const deleteUser = async (userId: number) : Promise<void> => {
-  return (handleApiCall(apiClient.delete<ApiResponse<void>>(`/users/${userId}/`)));
+  return (handleApiCall(apiClient.delete<ApiResponse<void>>(`/users/delete/${userId}/`)));
 };
